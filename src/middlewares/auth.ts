@@ -42,7 +42,7 @@ export const authenticate = (
     let user = {
       id: decodedToken.id,
       email: decodedToken.email,
-      name: decodedToken.name,
+      username: decodedToken.username,
       permissions: decodedToken.permissions,
     };
 

@@ -1,10 +1,10 @@
 import express from "express";
-// import {
-//   createNewUser,
-//   deleteUserById,
-//   getUserById,
-//   updateUserById,
-// } from "../controllers/user";
+import {
+  createNewUser,
+  deleteUserById,
+  getUserById,
+  updateUserById,
+} from "../controllers/user";
 import { authenticate } from "../middlewares/auth";
 import { authorize } from "../middlewares/authorize";
 import {
@@ -21,8 +21,7 @@ router.post(
   validateReqBody(createUserBodySchema),
   authenticate,
   authorize("users.create"),
-  // createNewUser
-  () => {},
+  createNewUser
 );
 
 // get-user router to fetch user by id
@@ -32,8 +31,7 @@ router.get(
   validateRequestParams(getUserParamsSchema),
   authenticate,
   authorize("users.fetch"),
-  // getUserById
-  () => {},
+  getUserById
 );
 
 // update-user-router to  update user data
@@ -43,8 +41,7 @@ router.put(
   validateReqBody(createUserBodySchema),
   authenticate,
   authorize("users.update"),
-  // updateUserById
-  () => {},
+  updateUserById
 );
 
 // delete-user-router to delete user data
@@ -53,8 +50,7 @@ router.delete(
   validateRequestParams(getUserParamsSchema),
   authenticate,
   authorize("users.delete"),
-  // deleteUserById
-  () => {},
+  deleteUserById
 );
 
 export default router;

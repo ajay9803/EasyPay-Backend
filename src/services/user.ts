@@ -10,9 +10,7 @@ export const add = (a: number, b: number) => {
 };
 
 // create new user
-export const createUser = async (user: Omit<User, "id">) => {
-  // const existingUser = UserModel.getUserByEmail(user.email);
-
+export const createUser = async (user: Omit<User, "id" | "permissions">) => {
   const existingUser = await UserModel.UserModel.getUserByEmail(user.email);
 
   // avoid duplicate email address

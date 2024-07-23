@@ -1,8 +1,10 @@
 // user - interface
 export interface User {
   id: string;
-  name: string;
+  username: string;
   email: string;
+  dob: string;
+  gender: string;
   password: string;
   permissions: string[];
 }

@@ -6,11 +6,22 @@ import BaseModel from "./base";
 
 export class UserModel extends BaseModel {
   // create user
-  static createUser = async (user: Omit<User, "id">) => {
+  static createUser = async (user: Omit<User, "id" | "permissions">) => {
+    const newBalance = {
+      amount: 0,
+    };
+
+    const response = await this.queryBuilder()
+      .insert(newBalance)
+      .table("balances");
+
+    console.log("Balance response is: ", response);
     const userToCreate = {
-      name: user.name,
+      username: user.username,
       email: user.email,
       password: user.password,
+      dob: user.dob,
+      gender: user.gender,
       role_id: 2,
     };
 

@@ -85,7 +85,7 @@ export const refreshAccessToken = (refreshToken: string) => {
     // create a payload from verified token
     const payload = {
       id: decodedToken.id,
-      name: decodedToken.name,
+      name: decodedToken.username,
       email: decodedToken.email,
       permissions: decodedToken.permissions,
     };
