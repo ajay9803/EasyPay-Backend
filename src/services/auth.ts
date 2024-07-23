@@ -2,12 +2,60 @@ import config from "../config";
 import { InvalidError } from "../error/invalid_error";
 import { NotFoundError } from "../error/not_found_error";
 import { UnauthenticatedError } from "../error/unauthenticated_error";
-// import { getUserByEmail } from "./user";
 import bcrypt from "bcrypt";
 import { verify, sign, JsonWebTokenError } from "jsonwebtoken";
 import { User } from "../interfaces/user";
 import HttpStatusCodes from "http-status-codes";
 import * as UserModel from "../models/user";
+import AuthModel from "../models/auth";
+import * as EmailService from "../utils/node_mailer";
+
+export const verifyOtp = async (email: string, otp: string) => {
+  const existingOtp = await AuthModel.findOtpByEmail(email);
+  const currentTime = new Date();
+  const otpCreationTime = new Date(existingOtp.created_at);
+  const timeDifference =
+    (currentTime.getTime() - otpCreationTime.getTime()) / 1000;
+
+  if (timeDifference <= 60) {
+    if (existingOtp.otp === otp) {
+      return true;
+    } else {
+      return false;
+    }
+  } else {
+    throw new InvalidError("OTP has expired.");
+  }
+};
+
+export const sendSignupOtp = async (email: string) => {
+  let otp = EmailService.generateOtp();
+
+  const exitingOtp = await AuthModel.findOtpByEmail(email);
+
+  if (exitingOtp) {
+    console.log("The otp does exist.");
+    await AuthModel.updateExistingOtp(email, otp);
+  } else {
+    console.log("The otp does not exist.");
+    await AuthModel.createOtp(email, otp);
+  }
+
+  await EmailService.sendSignupOtp(email, otp);
+  return {
+    statusCode: 200,
+    message: "Sign up OTP has been sent.",
+    otp: otp,
+  };
+};
+
+export const verifySignupOtp = async (sentOtp: string, receivedOtp: string) => {
+  if (sentOtp === receivedOtp) {
+    return true;
+  } else {
+    return false;
+  }
+};
 
 export const login = async (email: string, password: string) => {
   // fetch existing user by email

@@ -1,9 +1,9 @@
+// schema to validate request body while creating / updating user
 import Joi from "joi";
 
-// schema to validate request body while creating / updating user
 export const createUserBodySchema = Joi.object({
-  name: Joi.string().required().messages({
-    "any.required": "Name is required.",
+  username: Joi.string().required().messages({
+    "any.required": "Username is required.",
   }),
 
   email: Joi.string().email().required().messages({
@@ -16,12 +16,12 @@ export const createUserBodySchema = Joi.object({
     .min(8)
     .messages({
       "any.required": "Password is required.",
-      "string.min": "Password must be atleast 8 characters.",
+      "string.min": "Password must be at least 8 characters.",
       "password.uppercase":
-        "Password must have atleast one uppercase character.",
+        "Password must have at least one uppercase character.",
       "password.lowercase":
-        "Password must have atleast one lowercase character.",
-      "password.special": "Password must have atleast one special character.",
+        "Password must have at least one lowercase character.",
+      "password.special": "Password must have at least one special character.",
     })
     .custom((value, helpers) => {
       if (!/[A-Z]/.test(value)) {
@@ -38,6 +38,19 @@ export const createUserBodySchema = Joi.object({
 
       return value;
     }),
+
+  dob: Joi.date().required().messages({
+    "any.required": "Date of birth is required.",
+    "date.base": "Date of birth must be a valid date.",
+  }),
+
+  gender: Joi.string().valid("Male", "Female", "Other").required().messages({
+    "any.required": "Gender is required.",
+    "any.only": "Gender must be either 'Male', 'Female', or 'Other'.",
+  }),
+  otp: Joi.string().required().min(6).messages({
+    "any.required": "otp is required.",
+  }),
 }).options({
   stripUnknown: true,
 });

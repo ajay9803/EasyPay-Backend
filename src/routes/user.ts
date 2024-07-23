@@ -16,13 +16,7 @@ import { createUserBodySchema, getUserParamsSchema } from "../schemas/user";
 const router = express();
 
 // create-user route to create new user
-router.post(
-  "/",
-  validateReqBody(createUserBodySchema),
-  authenticate,
-  authorize("users.create"),
-  createNewUser
-);
+router.post("/", validateReqBody(createUserBodySchema), createNewUser);
 
 // get-user router to fetch user by id
 // make use of authenticate middleware to authenticate user for accessing further contents

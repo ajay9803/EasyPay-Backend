@@ -1,17 +1,28 @@
 import { ConflictError } from "../error/conflict_error";
 import { NotFoundError } from "../error/not_found_error";
 import { User } from "../interfaces/user";
-import * as UserModel from "../models/user";
+import UserModel from "../models/user";
 import bcrypt from "bcrypt";
 import HttpStatusCodes from "http-status-codes";
+import * as AuthService from "../services/auth";
+import { InvalidError } from "../error/invalid_error";
+import { UnauthenticatedError } from "../error/unauthenticated_error";
 
 export const add = (a: number, b: number) => {
   return a + b;
 };
 
 // create new user
-export const createUser = async (user: Omit<User, "id" | "permissions">) => {
-  const existingUser = await UserModel.UserModel.getUserByEmail(user.email);
+export const createUser = async (
+  user: Omit<User, "id" | "permissions">,
+  otp: string
+) => {
+  const verifyOtp = await AuthService.verifyOtp(user.email, otp);
+
+  if (!verifyOtp) {
+    throw new UnauthenticatedError("OTP verification failed.");
+  }
+  const existingUser = await UserModel.getUserByEmail(user.email);
 
   // avoid duplicate email address
   if (existingUser) {
@@ -25,7 +36,7 @@ export const createUser = async (user: Omit<User, "id" | "permissions">) => {
     password: hashedPassword,
   };
 
-  await UserModel.UserModel.createUser(newUser);
+  await UserModel.createUser(newUser);
 
   // return success-message
   return {
@@ -36,7 +47,7 @@ export const createUser = async (user: Omit<User, "id" | "permissions">) => {
 
 // get user by id
 export const getUserById = async (id: string) => {
-  const data = await UserModel.UserModel.getUserById(id);
+  const data = await UserModel.getUserById(id);
 
   // return success-message
   if (data) {
@@ -61,7 +72,7 @@ export const updateUserById = async (
   const hashedPassword = await bcrypt.hash(theUser.password, 10);
   theUser.password = hashedPassword;
 
-  const user = await UserModel.UserModel.updateUserById(id, theUser);
+  const user = await UserModel.updateUserById(id, theUser);
 
   if (user) {
     return {
@@ -76,7 +87,7 @@ export const updateUserById = async (
 
 // delete user by id
 export const deleteUserById = async (id: string) => {
-  await UserModel.UserModel.deleteUserById(id);
+  await UserModel.deleteUserById(id);
   return {
     statusCode: HttpStatusCodes.NO_CONTENT,
     message: "User deleted successfully",

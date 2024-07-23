@@ -18,6 +18,10 @@ const config = {
     DB_PORT: process.env.DB_PORT || 5432,
     DB_NAME: process.env.DB_NAME,
   },
+  emailService: {
+    USER_EMAIL: process.env.USER_EMAIL,
+    USER_EMAIL_PASS: process.env.USER_EMAIL_PASS,
+  },
 };
 
 export default config;

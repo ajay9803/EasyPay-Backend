@@ -1,21 +1,26 @@
-import { NotFoundError } from "../error/not_found_error";
 import { UnauthorizedError } from "../error/unauthorized_error";
 import { User } from "../interfaces/user";
 import { adminCheck } from "../utils/admin_check";
 import BaseModel from "./base";
+import {verifySignupOtp} from "../services/auth";
 
 export class UserModel extends BaseModel {
   // create user
   static createUser = async (user: Omit<User, "id" | "permissions">) => {
+
+    
     const newBalance = {
       amount: 0,
     };
 
     const response = await this.queryBuilder()
       .insert(newBalance)
-      .table("balances");
+      .table("balances")
+      .returning("id");
 
-    console.log("Balance response is: ", response);
+    const balance_id = response[0].id;
+
+    console.log("Balance response is: ", balance_id);
     const userToCreate = {
       username: user.username,
       email: user.email,
@@ -23,6 +28,7 @@ export class UserModel extends BaseModel {
       dob: user.dob,
       gender: user.gender,
       role_id: 2,
+      balance_id: balance_id,
     };
 
     await this.queryBuilder().insert(userToCreate).table("users");
@@ -111,3 +117,5 @@ export class UserModel extends BaseModel {
     }
   };
 }
+
+export default UserModel;

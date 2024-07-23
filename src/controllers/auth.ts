@@ -2,6 +2,23 @@ import e, { NextFunction, Request, Response } from "express";
 import * as AuthService from "../services/auth";
 import { NotFoundError } from "../error/not_found_error";
 
+export const sendSignupOtp = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { email } = req.body;
+
+    const result = await AuthService.sendSignupOtp(email);
+    res.status(result.statusCode).json(result);
+  } catch (e) {
+    console.log("The error is: ", e);
+    next(e);
+  }
+};
+
+
 // controller to login user
 export const login = async (
   req: Request,

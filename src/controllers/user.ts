@@ -8,19 +8,19 @@ export const createNewUser = async (
   next: NextFunction
 ) => {
   try {
-    const { name, email, password, dob, gender } = req.body;
+    const { username, email, password, dob, gender, otp } = req.body;
+    console.log(username, email, password, dob, gender);
 
     // create new user
     let newUser = {
-      username: name,
+      username: username,
       email: email,
       password: password,
       dob: dob,
       gender: gender,
-
     };
 
-    const result = await UserService.createUser(newUser);
+    const result = await UserService.createUser(newUser, otp);
     // send success message
     res.status(result.statusCode).send(result);
   } catch (e) {
