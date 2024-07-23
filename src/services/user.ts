@@ -7,6 +7,7 @@ import HttpStatusCodes from "http-status-codes";
 import * as AuthService from "../services/auth";
 import { InvalidError } from "../error/invalid_error";
 import { UnauthenticatedError } from "../error/unauthenticated_error";
+import BankAccountModel from "../models/bank_account";
 
 export const add = (a: number, b: number) => {
   return a + b;
@@ -36,7 +37,8 @@ export const createUser = async (
     password: hashedPassword,
   };
 
-  await UserModel.createUser(newUser);
+  const userId = await UserModel.createUser(newUser);
+  await BankAccountModel.createBankAccounts(userId);
 
   // return success-message
   return {

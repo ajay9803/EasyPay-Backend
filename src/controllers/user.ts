@@ -9,7 +9,6 @@ export const createNewUser = async (
 ) => {
   try {
     const { username, email, password, dob, gender, otp } = req.body;
-    console.log(username, email, password, dob, gender);
 
     // create new user
     let newUser = {

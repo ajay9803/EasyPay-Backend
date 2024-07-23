@@ -2,13 +2,10 @@ import { UnauthorizedError } from "../error/unauthorized_error";
 import { User } from "../interfaces/user";
 import { adminCheck } from "../utils/admin_check";
 import BaseModel from "./base";
-import {verifySignupOtp} from "../services/auth";
 
 export class UserModel extends BaseModel {
   // create user
   static createUser = async (user: Omit<User, "id" | "permissions">) => {
-
-    
     const newBalance = {
       amount: 0,
     };
@@ -20,7 +17,6 @@ export class UserModel extends BaseModel {
 
     const balance_id = response[0].id;
 
-    console.log("Balance response is: ", balance_id);
     const userToCreate = {
       username: user.username,
       email: user.email,
@@ -31,7 +27,8 @@ export class UserModel extends BaseModel {
       balance_id: balance_id,
     };
 
-    await this.queryBuilder().insert(userToCreate).table("users");
+    const createdUser = await this.queryBuilder().insert(userToCreate).table("users").returning('id');
+    return createdUser[0].id;
   };
 
   // fetch user by email
@@ -53,11 +50,16 @@ export class UserModel extends BaseModel {
         .select("permissions.permission_name")
         .where("role_id", user.roleId);
 
+      const balance = await this.queryBuilder()
+        .from("balances")
+        .where("id", user.balanceId)
+        .first();
+
       let userPermissions: string[] = permissions.map((permission) => {
         return permission.permissionName;
       });
 
-      return { ...user, permissions: userPermissions };
+      return { ...user, permissions: userPermissions, balance: balance.amount };
     }
 
     return user;

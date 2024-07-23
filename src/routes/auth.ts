@@ -11,6 +11,6 @@ router.post("/login", validateReqBody(loginUserSchema), login);
 // refresh token route - to regenerate access token
 router.post("/refresh-access-token", refreshAccessToken);
 
-router.get("/sign-up-otp", sendSignupOtp);
+router.post("/sign-up-otp", sendSignupOtp);
 
 export default router;

@@ -6,26 +6,27 @@ import bcrypt from "bcrypt";
 import { verify, sign, JsonWebTokenError } from "jsonwebtoken";
 import { User } from "../interfaces/user";
 import HttpStatusCodes from "http-status-codes";
-import * as UserModel from "../models/user";
+import UserModel from "../models/user";
 import AuthModel from "../models/auth";
 import * as EmailService from "../utils/node_mailer";
 
 export const verifyOtp = async (email: string, otp: string) => {
   const existingOtp = await AuthModel.findOtpByEmail(email);
-  const currentTime = new Date();
-  const otpCreationTime = new Date(existingOtp.created_at);
+  let currentTime = new Date();
+  const otpCreationTime = new Date(existingOtp.createdAt);
   const timeDifference =
     (currentTime.getTime() - otpCreationTime.getTime()) / 1000;
 
-  if (timeDifference <= 60) {
-    if (existingOtp.otp === otp) {
-      return true;
-    } else {
-      return false;
-    }
+
+  // if (timeDifference <= 60) {
+  if (existingOtp.otp === otp) {
+    return true;
   } else {
-    throw new InvalidError("OTP has expired.");
+    return false;
   }
+  // } else {
+  //   throw new InvalidError("OTP has expired.");
+  // }
 };
 
 export const sendSignupOtp = async (email: string) => {
@@ -34,10 +35,8 @@ export const sendSignupOtp = async (email: string) => {
   const exitingOtp = await AuthModel.findOtpByEmail(email);
 
   if (exitingOtp) {
-    console.log("The otp does exist.");
     await AuthModel.updateExistingOtp(email, otp);
   } else {
-    console.log("The otp does not exist.");
     await AuthModel.createOtp(email, otp);
   }
 
@@ -49,17 +48,9 @@ export const sendSignupOtp = async (email: string) => {
   };
 };
 
-export const verifySignupOtp = async (sentOtp: string, receivedOtp: string) => {
-  if (sentOtp === receivedOtp) {
-    return true;
-  } else {
-    return false;
-  }
-};
-
 export const login = async (email: string, password: string) => {
   // fetch existing user by email
-  const existingUser = await UserModel.UserModel.getUserByEmail(email);
+  const existingUser = await UserModel.getUserByEmail(email);
 
   // throw error when the user data is null
   if (!existingUser) {

@@ -22,19 +22,7 @@ app.use(helmet());
 // make use of limiter
 app.use(limiter);
 
-const allowedOrigins = ["https://www.google.com"];
-
-app.use(
-  cors({
-    origin: (origin, callback) => {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, origin);
-      } else {
-        callback(new Error("Not allowed"));
-      }
-    },
-  })
-);
+app.use(cors());
 
 app.use(express.json());
 

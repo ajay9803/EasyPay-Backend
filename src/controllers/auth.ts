@@ -13,11 +13,9 @@ export const sendSignupOtp = async (
     const result = await AuthService.sendSignupOtp(email);
     res.status(result.statusCode).json(result);
   } catch (e) {
-    console.log("The error is: ", e);
     next(e);
   }
 };
-
 
 // controller to login user
 export const login = async (
@@ -37,7 +35,7 @@ export const login = async (
   }
 };
 
-// controller to refresh access token 
+// controller to refresh access token
 export const refreshAccessToken = async (
   req: Request,
   res: Response,

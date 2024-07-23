@@ -8,7 +8,6 @@ class AuthModel extends BaseModel {
       .where("email", email)
       .first();
 
-    console.log("The returned otp is: ", otp);
 
     return otp;
   };
