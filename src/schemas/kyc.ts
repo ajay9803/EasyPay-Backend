@@ -16,6 +16,28 @@ export const applyForKycBodySchema = Joi.object({
   stripUnknown: true,
 });
 
-export const fetchKycApplicationsQuerySchema = Joi.object().options({
+export const fetchKycApplicationsQuerySchema = Joi.object({
+  page: Joi.number().integer().min(1).required().messages({
+    "number.base": '"Page" should be a number.',
+    "number.integer": '"Page" should be an integer.',
+    "number.min": '"Page" should be at least 1.',
+    "any.required": '"Page" is required.',
+  }),
+  size: Joi.number().integer().min(1).required().messages({
+    "number.base": '"Size" should be a number.',
+    "number.integer": '"Size" should be an integer.',
+    "number.min": '"Size" should be at least 1.',
+    "any.required": '"Size" is required.',
+  }),
+}).options({
+  stripUnknown: true,
+});
+
+export const verifyKycApplicationBodySchema = Joi.object({
+  isVerified: Joi.boolean().required().messages({
+    "boolean.base": '"isVerified" should be a boolean',
+    "any.required": '"isVerified" is required',
+  }),
+}).options({
   stripUnknown: true,
 });

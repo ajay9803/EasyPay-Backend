@@ -14,11 +14,20 @@ import { authenticate } from "../middlewares/auth";
 import { authorize } from "../middlewares/authorize";
 import {
   validateReqBody,
+  validateReqQuery,
   validateRequestParams,
 } from "../middlewares/validator";
-import { createUserBodySchema, getUserParamsSchema } from "../schemas/user";
+import {
+  createUserBodySchema,
+  getUserParamsSchema,
+  loadBalanceBodySchema,
+} from "../schemas/user";
 import uploader from "../middlewares/file_upload";
-import { applyForKycBodySchema } from "../schemas/kyc";
+import {
+  applyForKycBodySchema,
+  fetchKycApplicationsQuerySchema,
+  verifyKycApplicationBodySchema,
+} from "../schemas/kyc";
 import bodyParser from "body-parser";
 
 const router = express();
@@ -56,8 +65,8 @@ router.post(
   authenticate,
   authorize("users.apply-for-kyc"),
   uploader.fields([
-    { name: "user-photo", maxCount: 1 },
-    { name: "citizenship-photo", maxCount: 1 },
+    { name: "userPhoto", maxCount: 1 },
+    { name: "citizenshipPhoto", maxCount: 1 },
   ]),
   applyForKyc
 );
@@ -71,6 +80,7 @@ router.get(
 
 router.get(
   "/kyc-applications",
+  validateReqQuery(fetchKycApplicationsQuerySchema),
   authenticate,
   authorize("users.fetch-kyc-applications"),
   fetchKycApplications
@@ -78,6 +88,7 @@ router.get(
 
 router.patch(
   "/verify-kyc-application",
+  validateReqBody(verifyKycApplicationBodySchema),
   authenticate,
   authorize("verify-kyc-application"),
   verifyKycApplication
@@ -85,6 +96,7 @@ router.patch(
 
 router.patch(
   "/load-balance",
+  validateReqBody(loadBalanceBodySchema),
   authenticate,
   authorize("load-balance"),
   loadBalance
