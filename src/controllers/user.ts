@@ -112,6 +112,7 @@ export const applyForKyc = async (
     console.log(imageFiles);
 
     let { citizenshipNumber, citizenshipIssueDate } = req.body;
+    console.log('The data are: ', citizenshipNumber, citizenshipIssueDate);
     let userId = req.user!.id;
 
     const result = await UserService.applyForKyc({

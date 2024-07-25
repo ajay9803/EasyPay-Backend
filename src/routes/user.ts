@@ -19,6 +19,7 @@ import {
 import { createUserBodySchema, getUserParamsSchema } from "../schemas/user";
 import uploader from "../middlewares/file_upload";
 import { applyForKycBodySchema } from "../schemas/kyc";
+import bodyParser from "body-parser";
 
 const router = express();
 
@@ -50,6 +51,8 @@ router.delete(
 
 router.post(
   "/apply-for-kyc",
+  bodyParser.urlencoded({ extended: true }),
+  // validateReqBody(applyForKycBodySchema),
   authenticate,
   authorize("users.apply-for-kyc"),
   uploader.fields([

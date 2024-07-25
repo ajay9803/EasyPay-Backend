@@ -8,13 +8,13 @@ import {
 } from "firebase/storage";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyAAWhrTbghjei-jdc7J0hQ98-3zLw5rkAE",
-  authDomain: "nohara-591ab.firebaseapp.com",
-  projectId: "nohara-591ab",
-  storageBucket: "nohara-591ab.appspot.com",
-  messagingSenderId: "666589655619",
-  appId: "1:666589655619:web:27439c6e1c1e4c8eec9af6",
-  measurementId: "G-0MSWZYR153",
+  apiKey: config.firebase.FIREBASE_API_KEY,
+  authDomain: config.firebase.FIREBASE_AUTH_DOMAIN,
+  projectId: config.firebase.FIREBASE_PROJECT_ID,
+  storageBucket: config.firebase.FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: config.firebase.FIREBASE_MESSAGING_SENDER_ID,
+  appId: config.firebase.FIREBASE_APP_ID,
+  measurementId: config.firebase.FIREBASE_MEASUREMENT_ID,
 };
 
 const app = initializeApp(firebaseConfig);

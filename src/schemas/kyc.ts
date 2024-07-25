@@ -12,5 +12,10 @@ export const applyForKycBodySchema = Joi.object({
         "Citizenship issue date must be in the format YYYY-MM-DD.",
       "any.required": "Citizenship issue date is required.",
     }),
+}).options({
+  stripUnknown: true,
 });
 
+export const fetchKycApplicationsQuerySchema = Joi.object().options({
+  stripUnknown: true,
+});
