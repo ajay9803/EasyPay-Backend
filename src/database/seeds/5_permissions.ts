@@ -1,4 +1,5 @@
 import { Knex } from "knex";
+import { permission } from "process";
 
 const TABLE_NAME = "permissions";
 
@@ -29,6 +30,12 @@ export function seed(knex: Knex): Promise<void> {
           id: 4,
           permission_name: "users.fetch",
         },
+        { id: 5, permission_name: "users.apply-for-kyc" },
+        { id: 6, permission_name: "users.fetch-kyc-application" },
+        { id: 7, permission_name: "users.load-balance" },
+        { id: 8, permission_name: "users.fetch-linked-bank-accounts" },
+        { id: 9, permission_name: "users.fetch-kyc-applications" },
+        { id: 10, permission_name: "users.verify-kyc-application" },
       ]);
     });
 }

@@ -19,8 +19,9 @@ export function seed(knex: Knex): Promise<void> {
           email: "admin@gmail.com",
           dob: "2000-07-31",
           gender: "Male",
-          password: "Test@9803",
-          balance_id: 1,
+          password:
+            "$2b$10$o5MRWBziSxr69KFmDaylReXUDhRQ7B9tLYa.M.iWSTxDoZ99zdJxq",
+          balance: 0,
           role_id: 1,
         },
         {
@@ -29,8 +30,9 @@ export function seed(knex: Knex): Promise<void> {
           email: "test1@gmail.com",
           dob: "2000-07-31",
           gender: "Male",
-          password: "Test@9803",
-          balance_id: 2,
+          password:
+            "$2b$10$o5MRWBziSxr69KFmDaylReXUDhRQ7B9tLYa.M.iWSTxDoZ99zdJxq",
+          balance: 0,
           role_id: 2,
         },
       ]);

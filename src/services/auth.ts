@@ -17,7 +17,6 @@ export const verifyOtp = async (email: string, otp: string) => {
   const timeDifference =
     (currentTime.getTime() - otpCreationTime.getTime()) / 1000;
 
-
   // if (timeDifference <= 60) {
   if (existingOtp.otp === otp) {
     return true;
@@ -42,15 +41,16 @@ export const sendSignupOtp = async (email: string) => {
 
   await EmailService.sendSignupOtp(email, otp);
   return {
-    statusCode: 200,
+    statusCode: HttpStatusCodes.OK,
     message: "Sign up OTP has been sent.",
     otp: otp,
   };
 };
 
-export const login = async (email: string, password: string) => {
+export const login = async (email: string, userPassword: string) => {
   // fetch existing user by email
   const existingUser = await UserModel.getUserByEmail(email);
+
 
   // throw error when the user data is null
   if (!existingUser) {
@@ -59,7 +59,7 @@ export const login = async (email: string, password: string) => {
   }
 
   // check for password validation
-  const isValidPassword = await bcrypt.compare(password, existingUser.password);
+  const isValidPassword = await bcrypt.compare(userPassword, existingUser.password);
 
   // throw error on invalid password
   if (!isValidPassword) {
@@ -85,11 +85,13 @@ export const login = async (email: string, password: string) => {
     expiresIn: config.jwt.refreshtoken_expiry,
   });
 
+  const {password, ...userWithoutPassword} = existingUser; 
+
   // return success message
   return {
     statusCode: HttpStatusCodes.OK,
     message: "User login successful.",
-    user: existingUser,
+    user: userWithoutPassword,
     accessToken: accessToken,
     refreshToken: refreshToken,
   };

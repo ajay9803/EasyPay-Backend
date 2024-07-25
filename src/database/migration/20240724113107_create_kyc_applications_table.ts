@@ -1,6 +1,6 @@
 import { Knex } from "knex";
 
-const TABLE_NAME = "users";
+const TABLE_NAME = "kyc_applications";
 
 /**
  * Create table TABLE_NAME.
@@ -11,23 +11,35 @@ const TABLE_NAME = "users";
 export async function up(knex: Knex): Promise<void> {
   return knex.schema.createTable(TABLE_NAME, (table) => {
     table.bigIncrements();
-    table.string("username", 100).notNullable();
-    table.string("email", 100).notNullable().unique();
-    table.string("dob", 100).notNullable();
-    table.string("gender", 10).notNullable();
-    table.string("password", 100).notNullable();
-    table.bigInteger("balance").notNullable();
     table
-      .bigInteger("role_id")
+      .bigInteger("user_id")
       .notNullable()
       .references("id")
-      .inTable("roles")
+      .inTable("users")
       .onDelete("cascade");
-    table.boolean("is_verified").defaultTo(false);
+    table.string("citizenship_number", 100).notNullable();
+    table.string("citizenship_issue_date", 100).notNullable();
+    table.string("citizenship_photo_url", 500).notNullable();
+    table.string("user_photo_url", 500).notNullable();
 
     table.timestamp("created_at").notNullable().defaultTo(knex.raw("now()"));
+    table.boolean('is_verified').notNullable().defaultTo(false);
+
+    table
+      .bigInteger("created_by")
+      .unsigned()
+      .nullable()
+      .references("id")
+      .inTable("users");
 
     table.timestamp("updated_at").nullable();
+
+    table
+      .bigInteger("updated_by")
+      .unsigned()
+      .references("id")
+      .inTable(TABLE_NAME)
+      .nullable();
   });
 }
 

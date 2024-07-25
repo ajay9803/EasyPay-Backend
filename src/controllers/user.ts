@@ -1,5 +1,8 @@
 import * as UserService from "../services/user";
 import { NextFunction, Request, Response } from "express";
+import { Request as AuthRequest } from "../interfaces/auth";
+import { UnauthorizedError } from "../error/unauthorized_error";
+import { NotFoundError } from "../error/not_found_error";
 
 // controller to create new user
 export const createNewUser = async (
@@ -29,12 +32,13 @@ export const createNewUser = async (
 
 // controller to fetch user by id
 export const getUserById = async (
-  req: Request,
+  req: AuthRequest,
   res: Response,
   next: NextFunction
 ) => {
   try {
-    const { id } = req.params;
+    const id = req.user!.id;
+
     const result = await UserService.getUserById(id);
 
     // send success message
@@ -90,6 +94,102 @@ export const deleteUserById = async (
     res.send(result);
   } catch (e) {
     // send error to generic error handler
+    next(e);
+  }
+};
+
+export const applyForKyc = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    if (!req.files) {
+      throw new NotFoundError("User images not found.");
+    }
+
+    const imageFiles = req.files as { [key: string]: Express.Multer.File[] };
+    console.log(imageFiles);
+
+    let { citizenshipNumber, citizenshipIssueDate } = req.body;
+    let userId = req.user!.id;
+
+    const result = await UserService.applyForKyc({
+      userId,
+      citizenshipNumber,
+      citizenshipIssueDate,
+      imageFiles,
+    });
+
+    res.status(result.statusCode).json(result);
+  } catch (e) {
+    console.log("The error is: ", e);
+    next(e);
+  }
+};
+
+export const fetchKycApplication = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const userId = req.user!.id;
+
+    const result = await UserService.fetchKycApplication(userId);
+
+    res.status(result.statusCode).json(result);
+  } catch (e) {
+    next(e);
+  }
+};
+
+export const fetchKycApplications = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const userId = req.user!.id;
+
+    const { page, size } = req.query;
+
+    const result = await UserService.fetchKycApplications(+page!, +size!);
+
+    res.status(result.statusCode).json(result);
+  } catch (e) {
+    next(e);
+  }
+};
+
+export const verifyKycApplication = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const userId = req.user!.id;
+
+    const { isVerified } = req.body;
+    const result = await UserService.verifyKycApplication(userId, isVerified);
+    res.status(result.statusCode).json(result);
+  } catch (e) {
+    next(e);
+  }
+};
+
+export const loadBalance = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const userId = req.user!.id;
+
+    const { bankAccountId, amount } = req.body;
+    const result = await UserService.loadBalance(userId, bankAccountId, amount);
+    res.status(result.statusCode).json(result);
+  } catch (e) {
     next(e);
   }
 };
