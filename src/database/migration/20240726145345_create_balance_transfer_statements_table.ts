@@ -1,6 +1,6 @@
 import { Knex } from "knex";
 
-const TABLE_NAME = "kyc_applications";
+const TABLE_NAME = "balance_transfer_statements";
 
 /**
  * Create table TABLE_NAME.
@@ -12,18 +12,22 @@ export async function up(knex: Knex): Promise<void> {
   return knex.schema.createTable(TABLE_NAME, (table) => {
     table.bigIncrements();
     table
-      .bigInteger("user_id")
+      .bigInteger("sender_user_id")
       .notNullable()
       .references("id")
-      .inTable("users")
-      .onDelete("cascade");
-    table.string("citizenship_number", 100).notNullable();
-    table.string("citizenship_issue_date", 100).notNullable();
-    table.string("citizenship_photo_url", 500).notNullable();
-    table.string("user_photo_url", 500).notNullable();
+      .inTable("users");
+    table
+      .bigInteger("receiver_user_id")
+      .notNullable()
+      .references("id")
+      .inTable("users");
+    table.bigInteger("amount").notNullable();
+    table.string("remarks", 50).notNullable();
+    table.string("purpose", 50).notNullable();
+    table.string("sender_username", 100).notNullable();
+    table.string("receiver_username", 100).notNullable();
 
     table.timestamp("created_at").notNullable().defaultTo(knex.raw("now()"));
-    table.string('status').notNullable();
 
     table
       .bigInteger("created_by")

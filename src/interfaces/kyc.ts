@@ -5,6 +5,7 @@ export interface IKyc {
   citizenshipIssueDate: string;
   citizenshipPhotoUrl: string;
   userPhotoUrl: string;
+  status: string;
 }
 
 export interface IReqKyc {
@@ -12,4 +13,5 @@ export interface IReqKyc {
   citizenshipNumber: string;
   citizenshipIssueDate: string;
   imageFiles: { [key: string]: Express.Multer.File[] };
+  status: string;
 }

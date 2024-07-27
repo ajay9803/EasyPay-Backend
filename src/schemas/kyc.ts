@@ -29,6 +29,12 @@ export const fetchKycApplicationsQuerySchema = Joi.object({
     "number.min": '"Size" should be at least 1.',
     "any.required": '"Size" is required.',
   }),
+  status: Joi.string()
+    .valid("Pending", "Verified", "Rejected", "All")
+    .messages({
+      "any.only":
+        '"Status" should be either Pending, Verified, Rejected or All.',
+    }),
 }).options({
   stripUnknown: true,
 });
@@ -37,6 +43,11 @@ export const verifyKycApplicationBodySchema = Joi.object({
   isVerified: Joi.boolean().required().messages({
     "boolean.base": '"isVerified" should be a boolean',
     "any.required": '"isVerified" is required',
+  }),
+  userId: Joi.number().integer().required().messages({
+    "number.base": '"userId" should be a number',
+    "number.integer": '"userId" should be an integer',
+    "any.required": '"userId" is required',
   }),
 }).options({
   stripUnknown: true,

@@ -5,17 +5,8 @@ import UserModel from "../models/user";
 import bcrypt from "bcrypt";
 import HttpStatusCodes from "http-status-codes";
 import * as AuthService from "../services/auth";
-import { InvalidError } from "../error/invalid_error";
 import { UnauthenticatedError } from "../error/unauthenticated_error";
 import BankAccountModel from "../models/bank_account";
-import { IReqKyc } from "../interfaces/kyc";
-import {
-  storage,
-  ref,
-  uploadBytesResumable,
-  getDownloadURL,
-} from "../firebase";
-import fs from "fs";
 
 export const add = (a: number, b: number) => {
   return a + b;
@@ -73,6 +64,25 @@ export const getUserById = async (id: string) => {
   }
 };
 
+// get user by email
+
+export const getUserByEmail = async (email: string) => {
+  const data = await UserModel.getUserByEmail(email);
+
+  // return success-message
+  if (data) {
+    return {
+      statusCode: HttpStatusCodes.OK,
+      message: "User fetched successfully.",
+      user: data,
+    };
+  } else {
+    // throw user-user-not-found error
+    const error = new NotFoundError("User not found.");
+    throw error;
+  }
+};
+
 // update user by id
 export const updateUserById = async (
   id: string,
@@ -102,115 +112,4 @@ export const deleteUserById = async (id: string) => {
     statusCode: HttpStatusCodes.NO_CONTENT,
     message: "User deleted successfully",
   };
-};
-
-export const applyForKyc = async (kyc: IReqKyc) => {
-  const firstKey = Object.keys(kyc.imageFiles)[0];
-  const userPhoto = kyc.imageFiles[firstKey][0];
-
-  const secondKey = Object.keys(kyc.imageFiles)[1];
-  const citizenshipPhoto = kyc.imageFiles[secondKey][0];
-
-  console.log(userPhoto, citizenshipPhoto);
-
-  const userImageStorageRef = ref(
-    storage,
-    `user-images/${kyc.userId}/${userPhoto.originalname}`
-  );
-  const userImageMetaData = {
-    contentType: userPhoto.mimetype,
-  };
-  const userImageSnapshot = await uploadBytesResumable(
-    userImageStorageRef,
-    userPhoto.buffer,
-    userImageMetaData
-  );
-  const userImageUrl = await getDownloadURL(userImageSnapshot.ref);
-
-  const ctzImageStorageRef = ref(
-    storage,
-    `user-citizenships/${kyc.userId}/${citizenshipPhoto.originalname}`
-  );
-  const ctzImageMetaData = {
-    contentType: citizenshipPhoto.mimetype,
-  };
-  const ctzImageSnapshot = await uploadBytesResumable(
-    ctzImageStorageRef,
-    citizenshipPhoto.buffer,
-    ctzImageMetaData
-  );
-  const ctzUrl = await getDownloadURL(ctzImageSnapshot.ref);
-  console.log(ctzUrl);
-
-  await UserModel.applyForKyc({
-    userId: kyc.userId,
-    citizenshipNumber: kyc.citizenshipNumber,
-    citizenshipIssueDate: kyc.citizenshipIssueDate,
-    userPhotoUrl: userImageUrl,
-    citizenshipPhotoUrl: ctzUrl,
-  });
-
-  return {
-    statusCode: HttpStatusCodes.OK,
-    message: "Your application has been sent for review.",
-  };
-};
-
-export const fetchKycApplication = async (userId: string) => {
-  const kycApplication = await UserModel.fetchKycApplication(userId);
-
-  if (!kycApplication) {
-    throw new NotFoundError("You haven't submitted your KYC application.");
-  } else {
-    return {
-      statusCode: HttpStatusCodes.OK,
-      message: "Kyc application fetched successfully.",
-      application: kycApplication,
-    };
-  }
-};
-
-export const fetchKycApplications = async (
-  page: number,
-  size: number
-) => {
-  const kycApplications = await UserModel.fetchKycApplications(
-    page,
-    size
-  );
-
-  if (kycApplications.length === 0) {
-    throw new NotFoundError("No applications found.");
-  } else {
-    return {
-      statusCode: HttpStatusCodes.OK,
-      message: "Kyc applications fetched successfully.",
-      applications: kycApplications,
-    };
-  }
-};
-
-export const verifyKycApplication = async (
-  userId: string,
-  isVerified: boolean
-) => {
-  await UserModel.verifyKycApplication(userId, isVerified);
-  return {
-    statusCode: HttpStatusCodes.OK,
-    message: isVerified
-      ? "Your Kyc application has been verified."
-      : "Your KYC application has been rejected.",
-  };
-};
-
-export const loadBalance = async (
-  userId: string,
-  bankAccountId: string,
-  amount: number
-) => {
-  await UserModel.loadBalance(userId, bankAccountId, amount);
-  return {
-    statusCode: HttpStatusCodes.OK,
-    message: `You've successfully loaded Rs.${amount}.`,
-  }
 };
