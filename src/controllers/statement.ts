@@ -17,7 +17,6 @@ export const fetchLoadFundTransactions = async (
   }
 };
 
-
 export const getBalanceTransferStatements = async (
   req: AuthRequest,
   res: Response,
@@ -25,11 +24,14 @@ export const getBalanceTransferStatements = async (
 ) => {
   try {
     const userId = req.user!.id;
-    const { page, size } = req.query;
+    const { page, size, cashFlow, startDate, endDate } = req.query;
     const result = await StatementService.getBalanceTransferStatements(
       userId,
       +page!,
-      +size!
+      +size!,
+      cashFlow!.toString(),
+      +startDate!,
+      +endDate!,
     );
 
     res.status(result.statusCode).json(result);

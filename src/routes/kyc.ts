@@ -16,6 +16,7 @@ import {
 
 const router = express();
 
+// user route to apply for kyc
 router.post(
   "/apply",
   authenticate,
@@ -27,6 +28,7 @@ router.post(
   applyForKyc
 );
 
+// user route to fetch single kyc application
 router.get(
   "/application",
   authenticate,
@@ -34,6 +36,7 @@ router.get(
   fetchKycApplication
 );
 
+// admin route to fetch all kyc applications
 router.get(
   "/applications",
   validateReqQuery(fetchKycApplicationsQuerySchema),
@@ -42,6 +45,7 @@ router.get(
   fetchKycApplications
 );
 
+// admin route to verify kyc application
 router.patch(
   "/verify",
   validateReqBody(verifyKycApplicationBodySchema),

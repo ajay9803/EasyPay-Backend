@@ -1,5 +1,6 @@
 import { BaseError } from "./base_error";
 
+// class - not found error
 export class NotFoundError extends BaseError {
     constructor(message = "Not found.") {
         super(message);

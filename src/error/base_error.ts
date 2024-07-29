@@ -1,4 +1,4 @@
-// base error class
+// class - base error 
 
 export class BaseError extends Error {
   constructor(message = "Something went wrong.") {

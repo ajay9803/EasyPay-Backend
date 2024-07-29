@@ -12,20 +12,21 @@ import * as EmailService from "../utils/node_mailer";
 
 export const verifyOtp = async (email: string, otp: string) => {
   const existingOtp = await AuthModel.findOtpByEmail(email);
-  let currentTime = new Date();
-  const otpCreationTime = new Date(existingOtp.createdAt);
-  const timeDifference =
-    (currentTime.getTime() - otpCreationTime.getTime()) / 1000;
+  if (existingOtp) {
+    let currentTime = new Date();
+    const otpCreationTime = new Date(existingOtp.createdAt);
+    const timeDifference =
+      (currentTime.getTime() - otpCreationTime.getTime()) / 1000;
 
-  // if (timeDifference <= 60) {
-  if (existingOtp.otp === otp) {
-    return true;
+    // if (timeDifference <= 60) {
+    if (existingOtp.otp === otp) {
+      return true;
+    } else {
+      return false;
+    }
   } else {
-    return false;
+    throw new InvalidError("OTP has expired.");
   }
-  // } else {
-  //   throw new InvalidError("OTP has expired.");
-  // }
 };
 
 export const sendSignupOtp = async (email: string) => {
@@ -51,7 +52,6 @@ export const login = async (email: string, userPassword: string) => {
   // fetch existing user by email
   const existingUser = await UserModel.getUserByEmail(email);
 
-
   // throw error when the user data is null
   if (!existingUser) {
     const error = new NotFoundError("No user found with associated email.");
@@ -59,7 +59,10 @@ export const login = async (email: string, userPassword: string) => {
   }
 
   // check for password validation
-  const isValidPassword = await bcrypt.compare(userPassword, existingUser.password);
+  const isValidPassword = await bcrypt.compare(
+    userPassword,
+    existingUser.password
+  );
 
   // throw error on invalid password
   if (!isValidPassword) {
@@ -85,7 +88,7 @@ export const login = async (email: string, userPassword: string) => {
     expiresIn: config.jwt.refreshtoken_expiry,
   });
 
-  const {password, ...userWithoutPassword} = existingUser; 
+  const { password, ...userWithoutPassword } = existingUser;
 
   // return success message
   return {

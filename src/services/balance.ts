@@ -28,7 +28,6 @@ export const loadBalance = async (
 export const transferBalance = async (
   balanceTransferArguments: ITransferBalance
 ) => {
-  console.log(balanceTransferArguments);
   const receiverUser = await UserModel.getUserByEmail(
     balanceTransferArguments.receiverEmail
   );
@@ -37,12 +36,13 @@ export const transferBalance = async (
     balanceTransferArguments.senderUserId
   );
 
+  if (+senderUser.balance < balanceTransferArguments.amount) {
+    throw new BadRequestError("You do not have enough balance.");
+  }
+
   if (receiverUser.id === senderUser.id) {
     throw new BadRequestError("You can't transfer funds to yourself.");
   }
-
-  console.log("The sender user is: ", senderUser);
-  console.log("The receiver user is: ", receiverUser);
 
   if (!receiverUser || !senderUser) {
     throw new NotFoundError("No user found with associated email.");

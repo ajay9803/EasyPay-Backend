@@ -9,6 +9,7 @@ import rateLimiter from "express-rate-limit";
 import cors from "cors";
 
 const app = express();
+
 // rate - limiter configuration
 const limiter = rateLimiter({
   windowMs: 60 * 1000, // 60,000 milliseconds
@@ -26,8 +27,10 @@ app.use(cors());
 
 app.use(express.json());
 
+// log request-method and request-url for easy debugging
 app.use(requestLogger);
 
+// pass router
 app.use(router);
 
 // pass error handling middleware

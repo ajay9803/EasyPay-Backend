@@ -11,7 +11,6 @@ import { NotFoundError } from "../error/not_found_error";
 import HttpStatusCodes from "http-status-codes";
 
 export const applyForKyc = async (kyc: IReqKyc) => {
-  console.log("the application is: ", kyc);
   const existingKycApplication = await KycModel.fetchExistingKycApplication(
     kyc.userId
   );
@@ -29,8 +28,6 @@ export const applyForKyc = async (kyc: IReqKyc) => {
 
   const secondKey = Object.keys(kyc.imageFiles)[1];
   const citizenshipPhoto = kyc.imageFiles[secondKey][0];
-
-  console.log(userPhoto, citizenshipPhoto);
 
   const userImageStorageRef = ref(
     storage,
@@ -59,7 +56,6 @@ export const applyForKyc = async (kyc: IReqKyc) => {
     ctzImageMetaData
   );
   const ctzUrl = await getDownloadURL(ctzImageSnapshot.ref);
-  console.log(ctzUrl);
 
   await KycModel.applyForKyc({
     userId: kyc.userId,

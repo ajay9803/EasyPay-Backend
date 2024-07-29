@@ -1,6 +1,6 @@
 import { BaseError } from "./base_error";
 
-// base class for unauthenticated error
+// class - unauthenticated error
 export class UnauthenticatedError extends BaseError {
   constructor(message = "Authentication failed.") {
     super(message);

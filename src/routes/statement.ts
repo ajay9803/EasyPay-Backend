@@ -8,6 +8,7 @@ import {
 
 const router = express();
 
+// route to fetch load-fund statements
 router.get(
   "/load-fund",
   authenticate,
@@ -15,6 +16,7 @@ router.get(
   fetchLoadFundTransactions
 );
 
+// route to fetch balance-transfer statements
 router.get(
   "/balance-transfer",
   authenticate,

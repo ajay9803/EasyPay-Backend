@@ -15,36 +15,54 @@ export class StatementModel extends BaseModel {
 
     return loadFundTransactions;
   };
-  
+
   static getBalanceTransferStatements = async (
     userId: string,
     page: number,
-    size: number
+    size: number,
+    cashFlow: string,
+    startDate: number,
+    endDate: number
   ) => {
-    console.log("The arguments are: ", userId, page, size);
-    const rawStatements = await this.queryBuilder()
+    console.log("The user id is: ", userId);
+    const query = this.queryBuilder()
       .select()
       .from("balance_transfer_statements")
-      .where("sender_user_id", userId)
-      .orWhere("receiver_user_id", userId)
       .limit(size)
-      .offset((page - 1) * size);
+      .offset((page - 1) * size)
+      .orderBy("created_at", "desc");
 
-    const totalStatementsCount = await this.queryBuilder()
+    const countQuery = this.queryBuilder()
       .count()
-      .from("balance_transfer_statements")
-      .where("sender_user_id", userId)
-      .orWhere("receiver_user_id", userId);
+      .from("balance_transfer_statements");
 
-    let statements = rawStatements.map((statement) => {
-      if (statement.senderUserId === userId) {
-        statement.cashFlow = "Credit";
+    const applyFilters = (qb: any) => {
+      qb.where("created_at", ">=", startDate).where(
+        "created_at",
+        "<=",
+        endDate
+      );
+      if (cashFlow === "All") {
+        qb.where("sender_user_id", userId).orWhere("receiver_user_id", userId);
+      } else if (cashFlow === "Debit") {
+        qb.where("receiver_user_id", userId);
       } else {
-        statement.cashFlow = "Debit";
+        qb.where("sender_user_id", userId);
       }
+    };
+
+    applyFilters(query);
+    applyFilters(countQuery);
+
+    const rawStatements = await query;
+    const totalCount = await countQuery.first();
+
+    const statements = rawStatements.map((statement: any) => {
+      statement.cashFlow =
+        statement.senderUserId === userId ? "Credit" : "Debit";
       return statement;
     });
 
-    return { statements, totalCount: totalStatementsCount };
+    return { statements, totalCount };
   };
 }

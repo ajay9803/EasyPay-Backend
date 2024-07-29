@@ -18,21 +18,28 @@ export const fetchLoadFundTransactions = async (userId: string) => {
 export const getBalanceTransferStatements = async (
   userId: string,
   page: number,
-  size: number
+  size: number,
+  cashFlow: string,
+  startDate: number,
+  endDate: number
 ) => {
   const resultObject = await StatementModel.getBalanceTransferStatements(
     userId,
     page,
-    size
+    size,
+    cashFlow,
+    startDate,
+    endDate
   );
 
   if (resultObject.statements.length === 0) {
     throw new NotFoundError("No statements found.");
   }
+
   return {
     statusCode: 200,
     message: "Statements fetched successfully.",
     statements: resultObject.statements,
-    totalCount: resultObject.totalCount,
+    totalCount: resultObject.totalCount.count,
   };
 };

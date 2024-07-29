@@ -14,15 +14,9 @@ export const applyForKyc = async (
     }
 
     const imageFiles = req.files as { [key: string]: Express.Multer.File[] };
-    console.log(imageFiles);
 
     let { citizenshipNumber, citizenshipIssueDate, status } = req.body;
-    console.log(
-      "The values are: ",
-      citizenshipNumber,
-      citizenshipIssueDate,
-      status
-    );
+
     let userId = req.user!.id;
 
     const result = await KycService.applyForKyc({
@@ -35,7 +29,6 @@ export const applyForKyc = async (
 
     res.status(result.statusCode).json(result);
   } catch (e) {
-    console.log("The error is: ", e);
     next(e);
   }
 };

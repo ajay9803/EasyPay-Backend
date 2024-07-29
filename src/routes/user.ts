@@ -15,7 +15,6 @@ import {
 import {
   createUserBodySchema,
   getUserParamsSchema,
-  loadBalanceBodySchema,
 } from "../schemas/user";
 
 const router = express();

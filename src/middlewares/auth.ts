@@ -6,7 +6,16 @@ import { UnauthenticatedError } from "../error/unauthenticated_error";
 import { InvalidError } from "../error/invalid_error";
 import { User } from "../interfaces/user";
 
-// authentication middleware - for verifying / authenticating user
+/**
+ * Authenticates the user by verifying the JWT token in the request headers.
+ *
+ * @param {Request} req - The Express request object.
+ * @param {Response} res - The Express response object.
+ * @param {NextFunction} next - The Express next function.
+ * @return {Promise<void>} - Returns a promise that resolves when the authentication is complete.
+ * @throws {UnauthenticatedError} - Throws an UnauthenticatedError if the authorization header is not found or the bearer token is not provided.
+ * @throws {InvalidError} - Throws an InvalidError if the token data is invalid.
+ */
 export const authenticate = (
   req: Request,
   res: Response,

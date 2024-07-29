@@ -10,6 +10,15 @@ import { BadRequestError } from "../error/bad_request_error";
 
 const logger = loggerWithNameSpace("ErrorHandler");
 
+/**
+ * Handles generic errors and sends appropriate responses based on the error type.
+ *
+ * @param {Error} error - The error object to handle.
+ * @param {Request} req - The request object.
+ * @param {Response} res - The response object.
+ * @param {NextFunction} next - The next function.
+ * @return {Response} The response object with the appropriate status code and message.
+ */
 export const genericErrorHandler = (
   error: Error,
   req: Request,

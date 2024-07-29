@@ -26,8 +26,10 @@ export async function up(knex: Knex): Promise<void> {
     table.string("purpose", 50).notNullable();
     table.string("sender_username", 100).notNullable();
     table.string("receiver_username", 100).notNullable();
+    table.bigInteger("sender_total_balance").notNullable();
+    table.bigInteger("receiver_total_balance").notNullable();
 
-    table.timestamp("created_at").notNullable().defaultTo(knex.raw("now()"));
+    table.bigInteger("created_at").notNullable();
 
     table
       .bigInteger("created_by")

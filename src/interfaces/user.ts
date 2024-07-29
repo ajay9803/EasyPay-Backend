@@ -1,4 +1,4 @@
-// user - interface
+// user interface - defines user model
 export interface User {
   id: string;
   username: string;
@@ -9,6 +9,7 @@ export interface User {
   permissions: string[];
 }
 
+// user interface by id - defines user model received from database
 export interface IUserById {
   id: string;
   username: string;
