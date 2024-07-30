@@ -114,3 +114,73 @@ export const deleteUserById = async (
     next(e);
   }
 };
+
+// controller to update passwrod by id
+export const updatePassword = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.params;
+
+    // the body contains password
+    const { oldPassword, newPassword } = req.body;
+
+    const result = await UserService.updatePassword(
+      id,
+      oldPassword,
+      newPassword
+    );
+
+    // send success message
+    res.status(result.statusCode).send(result);
+  } catch (e) {
+    // send error to generic error handler
+    next(e);
+  }
+};
+
+// controller to update email by id
+export const updateEmail = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.params;
+
+    // the body contains password
+    const { email, otp } = req.body;
+
+    const result = await UserService.updateEmailAddress(id, email, otp);
+
+    // send success message
+    res.status(result.statusCode).send(result);
+  } catch (e) {
+    // send error to generic error handler
+    next(e);
+  }
+};
+
+// controller to set new passwrod by id
+export const setNewPassword = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.params;
+
+    // the body contains password
+    const { password, otp } = req.body;
+
+    const result = await UserService.setNewPassword(id, password, otp);
+
+    // send success message
+    res.status(result.statusCode).send(result);
+  } catch (e) {
+    // send error to generic error handler
+    next(e);
+  }
+};

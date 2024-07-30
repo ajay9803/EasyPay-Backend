@@ -67,7 +67,8 @@ export class UserModel extends BaseModel {
         "role_id",
         "is_verified",
         "created_at",
-        "updated_at"
+        "updated_at",
+        "password"
       )
       .from("users")
       .where("id", id)
@@ -117,6 +118,36 @@ export class UserModel extends BaseModel {
     if (existingUser) {
       await this.queryBuilder().delete().from("users").where("id", id);
     }
+  };
+
+  // update password
+  static updatePassword = async (id: string, newPassword: string) => {
+    let updatedAt = new Date();
+
+    await this.queryBuilder()
+      .update({ password: newPassword, updatedAt: updatedAt })
+      .from("users")
+      .where("id", id);
+  };
+
+  // update email
+  static updateEmail = async (id: string, email: string) => {
+    let updatedAt = new Date();
+
+    await this.queryBuilder()
+      .update({ email: email, updatedAt: updatedAt })
+      .from("users")
+      .where("id", id);
+  };
+
+  // set new password
+  static setNewPassword = async (id: string, newPassword: string) => {
+    let updatedAt = new Date();
+
+    await this.queryBuilder()
+      .update({ password: newPassword, updatedAt: updatedAt })
+      .from("users")
+      .where("id", id);
   };
 }
 

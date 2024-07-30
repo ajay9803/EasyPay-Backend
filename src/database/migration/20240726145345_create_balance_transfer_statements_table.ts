@@ -15,12 +15,12 @@ export async function up(knex: Knex): Promise<void> {
       .bigInteger("sender_user_id")
       .notNullable()
       .references("id")
-      .inTable("users");
+      .inTable("users").onDelete('cascade');
     table
       .bigInteger("receiver_user_id")
       .notNullable()
       .references("id")
-      .inTable("users");
+      .inTable("users").onDelete('cascade');
     table.bigInteger("amount").notNullable();
     table.string("remarks", 50).notNullable();
     table.string("purpose", 50).notNullable();

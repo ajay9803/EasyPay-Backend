@@ -18,6 +18,10 @@ export const verifyOtp = async (email: string, otp: string) => {
     const timeDifference =
       (currentTime.getTime() - otpCreationTime.getTime()) / 1000;
 
+    console.log(existingOtp.otp);
+
+    console.log("The sent otp is: ", otp);
+
     // if (timeDifference <= 60) {
     if (existingOtp.otp === otp) {
       return true;
@@ -46,6 +50,49 @@ export const sendSignupOtp = async (email: string) => {
     message: "Sign up OTP has been sent.",
     otp: otp,
   };
+};
+
+export const sendUpdateEmailOtp = async (email: string) => {
+  let otp = EmailService.generateOtp();
+
+  const exitingOtp = await AuthModel.findOtpByEmail(email);
+
+  if (exitingOtp) {
+    await AuthModel.updateExistingOtp(email, otp);
+  } else {
+    await AuthModel.createOtp(email, otp);
+  }
+
+  await EmailService.sendChangeEmailOtp(email, otp);
+  return {
+    statusCode: HttpStatusCodes.OK,
+    message: "Reset email OTP has been sent.",
+    otp: otp,
+  };
+};
+
+export const sendForgotPasswordLink = async (email: string) => {
+  let otp = EmailService.generateOtp();
+
+  const exitingOtp = await AuthModel.findOtpByEmail(email);
+
+  if (exitingOtp) {
+    await AuthModel.updateExistingOtp(email, otp);
+  } else {
+    await AuthModel.createOtp(email, otp);
+  }
+
+  const user = await UserModel.getUserByEmail(email);
+
+  if (user) {
+    await EmailService.sendForgotOtpLink(email, user.id, otp);
+    return {
+      statusCode: HttpStatusCodes.OK,
+      message: "To reset your password, click on the link sent to your email.",
+    };
+  } else {
+    throw new NotFoundError("No such user found.");
+  }
 };
 
 export const login = async (email: string, userPassword: string) => {

@@ -113,3 +113,95 @@ export const deleteUserById = async (id: string) => {
     message: "User deleted successfully",
   };
 };
+
+// update password
+export const updatePassword = async (
+  id: string,
+  oldPassword: string,
+  newPassword: string
+) => {
+  const user = await UserModel.getUserById(id);
+
+  if (user) {
+    console.log(oldPassword, newPassword);
+    const isOldPasswordValid = await bcrypt.compare(oldPassword, user.password);
+
+    if (!isOldPasswordValid) {
+      throw new UnauthenticatedError("Invalid old password was provided.");
+    }
+
+    // hash the password - to store hashed password to the users data
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    newPassword = hashedPassword;
+
+    await UserModel.updatePassword(id, hashedPassword);
+
+    return {
+      statusCode: HttpStatusCodes.OK,
+      message: "Password updated successfully",
+    };
+  } else {
+    throw new NotFoundError("No such user found.");
+  }
+};
+
+export const updateEmailAddress = async (
+  id: string,
+  emailAddress: string,
+  otp: string
+) => {
+  const verifyOtp = await AuthService.verifyOtp(emailAddress, otp);
+
+  if (!verifyOtp) {
+    throw new UnauthenticatedError("OTP verification failed.");
+  }
+  const existingUser = await UserModel.getUserByEmail(emailAddress);
+
+  // avoid duplicate email address
+  if (existingUser) {
+    throw new ConflictError("User already exists.");
+  }
+
+  const userId = await UserModel.updateEmail(id, emailAddress);
+
+  // return success-message
+  return {
+    statusCode: HttpStatusCodes.OK,
+    message: "Email updated successfully.",
+  };
+};
+
+export const setNewPassword = async (
+  id: string,
+  newPassword: string,
+  otp: string
+) => {
+  const user = await UserModel.getUserById(id);
+
+  if (!user) {
+    throw new NotFoundError("No such user found.");
+  }
+
+  const verifyOtp = await AuthService.verifyOtp(user.email, otp);
+
+  if (!verifyOtp) {
+    throw new UnauthenticatedError("OTP verification failed.");
+  }
+
+  // hash the password - to store hashed password to the users data
+  const hashedPassword = await bcrypt.hash(newPassword, 10);
+  newPassword = hashedPassword;
+
+  await UserModel.setNewPassword(id, hashedPassword);
+
+  return {
+    statusCode: HttpStatusCodes.OK,
+    message: "Password updated successfully",
+  };
+
+  // return success-message
+  return {
+    statusCode: HttpStatusCodes.OK,
+    message: "Email updated successfully.",
+  };
+};
