@@ -15,15 +15,20 @@ import {
   validateReqBody,
   validateRequestParams,
 } from "../middlewares/validator";
-import { createUserBodySchema, getUserParamsSchema } from "../schemas/user";
+import {
+  createUserBodySchema,
+  getUserParamsSchema,
+  setNewPasswordBodySchema,
+  updateEmailBodySchema,
+  updatePasswordBodySchema,
+} from "../schemas/user";
 
 const router = express();
 
-// create-user route to create new user
+// Create-user route to create new user
 router.post("/", validateReqBody(createUserBodySchema), createNewUser);
 
-// get-user route to fetch user by id
-// make use of authenticate middleware to authenticate user for accessing further contents
+// Get-user route to fetch user by id
 router.get("/", authenticate, authorize("users.fetch"), getUserById);
 
 router.get(
@@ -33,7 +38,7 @@ router.get(
   getUserByEmail
 );
 
-// update-user-route to  update user data
+// Update-user-route to  update user data
 router.put(
   "/:id",
   validateRequestParams(getUserParamsSchema),
@@ -43,7 +48,7 @@ router.put(
   updateUserById
 );
 
-// delete-user-route to delete user data
+// Delete-user-route to delete user data
 router.delete(
   "/:id",
   validateRequestParams(getUserParamsSchema),
@@ -52,28 +57,31 @@ router.delete(
   deleteUserById
 );
 
-// update-password-route to update user password
+// Update-password-route to update user password
 router.patch(
   "/password/:id",
   validateRequestParams(getUserParamsSchema),
+  validateReqBody(updatePasswordBodySchema),
   authenticate,
-  authorize("users.delete"),
+  authorize("users.update-password"),
   updatePassword
 );
 
-// update-email-route to update user email address
+// Update-email-route to update user email address
 router.patch(
   "/email-address/:id",
   validateRequestParams(getUserParamsSchema),
+  validateReqBody(updateEmailBodySchema),
   authenticate,
-  authorize("users.delete"),
+  authorize("users.update-email"),
   updateEmail
 );
 
-// set-newpassword-route to set new password
+// Set-newpassword-route to set new password
 router.patch(
   "/new-password/:id",
   validateRequestParams(getUserParamsSchema),
+  validateReqBody(setNewPasswordBodySchema),
   setNewPassword
 );
 

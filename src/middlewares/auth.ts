@@ -22,29 +22,29 @@ export const authenticate = (
   next: NextFunction
 ) => {
   try {
-    // get authorization - headers
+    // Get authorization - headers
     const { authorization } = req.headers;
 
-    // throw unauthenticated error - when header not found
+    // Throw unauthenticated error - when header not found
     if (!authorization) {
       next(new UnauthenticatedError("Authorization header not found."));
       return;
     }
 
-    // throw unauthenticated error - bearer token not provided
+    // Throw unauthenticated error - bearer token not provided
     const token = authorization?.split(" ");
     if (token?.length !== 2 || token[0] !== "Bearer") {
       next(new UnauthenticatedError("No bearer token provided."));
       return;
     }
 
-    // verify token
+    // Verify token
     const decodedToken = verify(token[1], config.jwt.jwt_secret!) as Omit<
       User,
       "password"
     >;
 
-    // throw unauthenticated error - token data invalid
+    // Throw unauthenticated error - token data invalid
     if (!decodedToken) {
       next(new UnauthenticatedError());
     }
@@ -53,13 +53,14 @@ export const authenticate = (
       email: decodedToken.email,
       username: decodedToken.username,
       permissions: decodedToken.permissions,
+      isVerified: decodedToken.isVerified,
     };
 
     req.user = user;
 
     next();
   } catch (e) {
-    // throw invalid token error
+    // Throw invalid token error
     if (e instanceof JsonWebTokenError) {
       throw new InvalidError("Invalid token.");
     }

@@ -25,7 +25,7 @@ const fileFilter = (
   }
 };
 
-// multer upload middleware
+// Multer upload middleware
 const uploader = multer({
   storage: multer.memoryStorage(),
   fileFilter: fileFilter,

@@ -89,12 +89,13 @@ export const fetchKycApplication = async (userId: string) => {
 export const fetchKycApplications = async (
   page: number,
   size: number,
-  status: string
+  status: string, email: string,
 ) => {
   const kycApplications = await KycModel.fetchKycApplications(
     page,
     size,
-    status
+    status,
+    email
   );
 
   if (kycApplications.length === 0) {

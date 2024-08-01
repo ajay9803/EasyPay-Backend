@@ -7,6 +7,10 @@ import { requestLogger } from "./middlewares/logger";
 import helmet from "helmet";
 import rateLimiter from "express-rate-limit";
 import cors from "cors";
+import http from "http";
+import { Socket, Server as SocketIo } from "socket.io";
+import { ExtendedSocket } from "./interfaces/socket";
+import { SocketModel } from "./models/socket";
 
 const app = express();
 
@@ -23,7 +27,16 @@ app.use(helmet());
 // make use of limiter
 // app.use(limiter);
 
+const server = http.createServer(app);
+
 app.use(cors());
+export const io = new SocketIo(server, {
+  cors: {
+    origin: "http://localhost:5173",
+    methods: ["GET", "POST"],
+    credentials: true,
+  },
+});
 
 app.use(express.json());
 
@@ -36,7 +49,22 @@ app.use(router);
 // pass error handling middleware
 app.use(genericErrorHandler);
 
+io.on("connection", (socket: Socket) => {
+  socket.on("test", async (userId) => {
+    console.log(userId);
+    // await SocketModel.fetchSocket(6).then((data) => {
+    //   console.log(data);
+    // }).catch((e) => {
+    //   console.log(e);
+    // });
+  });
+
+  socket.on("disconnect", () => {
+    console.log("user disconnected");
+  });
+});
+
 // listen for connections on host/port
-app.listen(config.port, () => {
+server.listen(config.port, () => {
   console.log(`Server started listening on port: ${config.port}`);
 });

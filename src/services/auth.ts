@@ -18,10 +18,6 @@ export const verifyOtp = async (email: string, otp: string) => {
     const timeDifference =
       (currentTime.getTime() - otpCreationTime.getTime()) / 1000;
 
-    console.log(existingOtp.otp);
-
-    console.log("The sent otp is: ", otp);
-
     // if (timeDifference <= 60) {
     if (existingOtp.otp === otp) {
       return true;
@@ -123,6 +119,7 @@ export const login = async (email: string, userPassword: string) => {
     name: existingUser.name,
     email: existingUser.email,
     permissions: existingUser.permissions,
+    isVerified: existingUser.isVerified,
   };
 
   // create access token

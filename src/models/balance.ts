@@ -3,6 +3,7 @@ import { NotFoundError } from "../error/not_found_error";
 import { ITransferBalance } from "../interfaces/balance";
 import { IUserById } from "../interfaces/user";
 import BaseModel from "./base";
+import NotificationModel from "./notification";
 import UserModel from "./user";
 
 export class BalanceModel extends BaseModel {
@@ -106,7 +107,7 @@ export class BalanceModel extends BaseModel {
       .where("id", receiverUser.id);
 
     // Insert a record in the balance transfer statements table
-    await this.queryBuilder()
+    const statement = await this.queryBuilder()
       .insert({
         senderUserId: balanceTransferArgs.senderUserId,
         receiverUserId: receiverUser.id,
@@ -119,6 +120,16 @@ export class BalanceModel extends BaseModel {
         senderTotalBalance: senderTotalBalance,
         createdAt: new Date().getTime(),
       })
-      .table("balance_transfer_statements");
+      .table("balance_transfer_statements")
+      .returning("id");
+
+    const statementId = statement[0].id;
+
+    await NotificationModel.createNotifications(
+      balanceTransferArgs,
+      receiverUser,
+      senderUser,
+      statementId
+    );
   };
 }

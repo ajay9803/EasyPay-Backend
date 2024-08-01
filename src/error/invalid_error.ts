@@ -1,6 +1,9 @@
 import { BaseError } from "./base_error";
 
-// class - invalid error
+/**
+ * Class representing an Invalid Error.
+ * @extends BaseError
+ */
 export class InvalidError extends BaseError {
   constructor(message = "Invalid.") {
     super(message);

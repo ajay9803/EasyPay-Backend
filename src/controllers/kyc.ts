@@ -55,12 +55,13 @@ export const fetchKycApplications = async (
   next: NextFunction
 ) => {
   try {
-    const { page, size, status } = req.query;
+    const { page, size, status, email } = req.query;
 
     const result = await KycService.fetchKycApplications(
       +page!,
       +size!,
-      status!.toString()
+      status!.toString(),
+      email!.toString(),
     );
 
     res.status(result.statusCode).json(result);

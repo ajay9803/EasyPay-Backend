@@ -1,4 +1,4 @@
-// otp interface - defining opt model in database
+// Otp interface - defining opt model in database
 export interface IOtp {
     id: string;
     email: string;

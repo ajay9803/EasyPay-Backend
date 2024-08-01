@@ -1,5 +1,15 @@
 import Joi from "joi";
 
+
+/**
+ * The Joi schema to validate the request body for applying for KYC.
+ *
+ * @typedef {Object} ApplyForKycBodySchema
+ * @property {string} citizenshipNumber - The citizenship number of the user.
+ * @property {string} citizenshipIssueDate - The date of citizenship issue.
+ *
+ * @returns {Joi.ObjectSchema} The Joi schema for the request body.
+ */
 export const applyForKycBodySchema = Joi.object({
   citizenshipNumber: Joi.string().required().messages({
     "any.required": "Citizenship number is required.",
@@ -16,6 +26,18 @@ export const applyForKycBodySchema = Joi.object({
   stripUnknown: true,
 });
 
+/**
+ * The Joi schema to validate the query parameters for fetching KYC
+ * applications.
+ *
+ * @typedef {Object} FetchKycApplicationsQuerySchema
+ * @property {string} [status] - The status of the KYC application.
+ * @property {string} [email] - The email of the user.
+ * @property {number} page - The page number of the results.
+ * @property {number} size - The number of results per page.
+ *
+ * @returns {Joi.ObjectSchema} The Joi schema for the query parameters.
+ */
 export const fetchKycApplicationsQuerySchema = Joi.object({
   page: Joi.number().integer().min(1).required().messages({
     "number.base": '"Page" should be a number.',
@@ -35,10 +57,22 @@ export const fetchKycApplicationsQuerySchema = Joi.object({
       "any.only":
         '"Status" should be either Pending, Verified, Rejected or All.',
     }),
+  email: Joi.string().email().allow("", null).messages({
+    "string.email": "Email must be a valid format.",
+  }),
 }).options({
   stripUnknown: true,
 });
 
+/**
+ * The Joi schema to validate the request body for verifying KYC application.
+ *
+ * @typedef {Object} VerifyKycApplicationBodySchema
+ * @property {boolean} isVerified - The status of the KYC application: true - verified, false - rejected.
+ * @property {number} userId - The ID of the user.
+ *
+ * @returns {Joi.ObjectSchema} The Joi schema for the request body.
+ */
 export const verifyKycApplicationBodySchema = Joi.object({
   isVerified: Joi.boolean().required().messages({
     "boolean.base": '"isVerified" should be a boolean',

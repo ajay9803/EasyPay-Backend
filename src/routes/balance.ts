@@ -2,12 +2,15 @@ import express from "express";
 import { authenticate } from "../middlewares/auth";
 import { authorize } from "../middlewares/authorize";
 import { loadBalance, transferBalance } from "../controllers/balance";
-import { loadBalanceBodySchema, transferBalanceBodySchema } from "../schemas/balance";
+import {
+  loadBalanceBodySchema,
+  transferBalanceBodySchema,
+} from "../schemas/balance";
 import { validateReqBody } from "../middlewares/validator";
 
 const router = express();
 
-// route to load balance
+// Route to load balance
 router.patch(
   "/load",
   validateReqBody(loadBalanceBodySchema),
@@ -16,12 +19,12 @@ router.patch(
   loadBalance
 );
 
-// route to transfer balance
+// Route to transfer balance
 router.patch(
   "/transfer",
   validateReqBody(transferBalanceBodySchema),
   authenticate,
-  authorize("users.apply-for-kyc"),
+  authorize("users.transfer-balance"),
   transferBalance
 );
 

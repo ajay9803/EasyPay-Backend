@@ -13,16 +13,16 @@ export const authorize = (
 ) => {
   return (req: Request, res: Response, next: NextFunction) => {
     try {
-      // get request object with user data
+      // Get request object with user data
       const user = req.user!;
 
-      // check if the user has necessary permission to move along the operation
+      // Check if the user has necessary permission to move along the operation
       if (!user.permissions.includes(permission)) {
         next(new UnauthorizedError("Your access is forbidden."));
       }
       next();
     } catch (e) {
-      // throw any occuring error
+      // Throw any occuring error
       throw e;
     }
   };

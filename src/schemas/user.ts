@@ -1,6 +1,32 @@
-// schema to validate request body while creating / updating user
 import Joi from "joi";
 
+/**
+ * Validates the body schema for sending an OTP.
+ *
+ * @typedef {Object} SendOtpBodySchema
+ * @property {string} email - The email address to send the OTP to.
+ *
+ * @returns {Joi.Schema} The Joi schema for the body of the request.
+ */
+export const sendOtpBodySchema = Joi.object({
+  email: Joi.string().email().required().messages({
+    "any.required": "Email is required.",
+    "string.email": "Email must be a valid format.",
+  }),
+}).options({
+  stripUnknown: true,
+});
+
+/**
+ * Validates the body schema for creating a user.
+ *
+ * @typedef {Object} CreateUserBodySchema
+ * @property {string} username - The username of the user.
+ * @property {string} email - The email address of the user.
+ * @property {string} password - The password of the user.
+ *
+ * @returns {Joi.Schema} The Joi schema for the body of the request.
+ */
 export const createUserBodySchema = Joi.object({
   username: Joi.string().required().messages({
     "any.required": "Username is required.",
@@ -55,7 +81,15 @@ export const createUserBodySchema = Joi.object({
   stripUnknown: true,
 });
 
-// schema to validate login credentials of user
+/**
+ * Validates the body schema for user login.
+ *
+ * @typedef {Object} LoginUserBodySchema
+ * @property {string} email - The email address of the user.
+ * @property {string} password - The password of the user.
+ *
+ * @returns {Joi.Schema} The Joi schema for the body of the request.
+ */
 export const loginUserSchema = Joi.object({
   email: Joi.string().email().required().messages({
     "any.required": "Email is required.",
@@ -93,7 +127,14 @@ export const loginUserSchema = Joi.object({
   stripUnknown: true,
 });
 
-// schema to validate user id
+/**
+ * The Joi schema to validate the request parameters for getting user details.
+ *
+ * @typedef {Object} GetUserParamsSchema
+ * @property {number} id - The ID of the user.
+ *
+ * @returns {Joi.ObjectSchema} The Joi schema for the request parameters.
+ */
 export const getUserParamsSchema = Joi.object({
   id: Joi.number().min(0).required().messages({
     "number.base": '"id" should be a number.',
@@ -103,3 +144,58 @@ export const getUserParamsSchema = Joi.object({
 }).options({
   stripUnknown: true,
 });
+
+/**
+ * The Joi schema to validate the request body for updating password.
+ *
+ * @typedef {Object} UpdatePasswordBodySchema
+ * @property {string} oldPassword - The old password of the user.
+ * @property {string} newPassword - The new password of the user.
+ *
+ * @returns {Joi.ObjectSchema} The Joi schema for the request body.
+ */
+export const updatePasswordBodySchema = Joi.object({
+  oldPassword: Joi.string().required().messages({
+    "any.required": '"Old Password" is required.',
+  }),
+  newPassword: Joi.string().required().messages({
+    "any.required": '"New Password" is required.',
+  }),
+}).options({ stripUnknown: true });
+
+/**
+ * The Joi schema to validate the request body for setting a new password.
+ *
+ * @typedef {Object} SetNewPasswordBodySchema
+ * @property {string} password - The new password of the user.
+ * @property {string} otp - The OTP sent to the user's email for verification.
+ *
+ * @returns {Joi.ObjectSchema} The Joi schema for the request body.
+ */
+export const setNewPasswordBodySchema = Joi.object({
+  password: Joi.string().required().messages({
+    "any.required": '"Password" is required.',
+  }),
+  otp: Joi.string().required().messages({
+    "any.required": '"OTP" is required.',
+  }),
+}).options({ stripUnknown: true });
+
+/**
+ * The Joi schema to validate the request body for updating email.
+ *
+ * @typedef {Object} UpdateEmailBodySchema
+ * @property {string} email - The new email of the user.
+ * @property {string} otp - The OTP sent to the user's email for verification.
+ *
+ * @returns {Joi.ObjectSchema} The Joi schema for the request body.
+ */
+export const updateEmailBodySchema = Joi.object({
+  email: Joi.string().email().required().messages({
+    "string.email": '"Email" must be a valid format.',
+    "any.required": '"Email" is required.',
+  }),
+  otp: Joi.string().required().messages({
+    "any.required": '"OTP" is required.',
+  }),
+}).options({ stripUnknown: true });

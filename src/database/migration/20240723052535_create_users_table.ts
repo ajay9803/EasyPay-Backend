@@ -24,6 +24,7 @@ export async function up(knex: Knex): Promise<void> {
       .inTable("roles")
       .onDelete("cascade");
     table.boolean("is_verified").defaultTo(false);
+    table.bigInteger("easy_pay_points").defaultTo(0);
 
     table.timestamp("created_at").notNullable().defaultTo(knex.raw("now()"));
 

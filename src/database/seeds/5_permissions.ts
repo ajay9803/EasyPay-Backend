@@ -36,6 +36,14 @@ export function seed(knex: Knex): Promise<void> {
         { id: 8, permission_name: "users.fetch-linked-bank-accounts" },
         { id: 9, permission_name: "users.fetch-kyc-applications" },
         { id: 10, permission_name: "users.verify-kyc-application" },
+        { id: 11, permission_name: "users.transfer-balance" },
+        { id: 12, permission_name: "users.update-password" },
+        { id: 13, permission_name: "users.set-new-password" },
+        { id: 14, permission_name: "users.update-email" },
+        { id: 15, permission_name: "users.send-new-password-link" },
+        { id: 16, permission_name: "users.send-update-email-otp" },
+        { id: 17, permission_name: "users.fetch-balance-transfer-statements" },
+        { id: 18, permission_name: "users.fetch-notifications" },
       ]);
     });
 }

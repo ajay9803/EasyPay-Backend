@@ -55,8 +55,19 @@ export class KycModel extends BaseModel {
   static fetchKycApplications = async (
     page: number,
     size: number,
-    status: string
+    status: string,
+    email: string
   ): Promise<Array<IKycApplication>> => {
+    if (email.length > 0) {
+      let applications: IKycApplication[] = await this.queryBuilder()
+        .select()
+        .from("kyc_applications")
+        .join("users", "users.id", "kyc_applications.user_id")
+        .where("email", email);
+
+      return applications;
+    }
+
     // Construct the base query for fetching KYC applications
     const query = this.queryBuilder()
       .select()
@@ -67,10 +78,10 @@ export class KycModel extends BaseModel {
 
     // Fetch applications based on the status filter
     let applications: IKycApplication[];
-    if (status !== "All") {
-      applications = await query.where("status", status);
-    } else {
+    if (status === "All") {
       applications = await query;
+    } else {
+      applications = await query.where("status", status);
     }
 
     return applications;

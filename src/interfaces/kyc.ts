@@ -1,4 +1,4 @@
-// kyc inteface - defines kyc model to be stored in the database
+// Kyc inteface - defines kyc model to be stored in the database
 export interface IKyc {
   id: string;
   userId: string;
@@ -9,7 +9,7 @@ export interface IKyc {
   status: string;
 }
 
-// kyc-form interface - defines request body to apply for kyc
+// Kyc-form interface - defines request body to apply for kyc
 export interface IReqKyc {
   userId: string;
   citizenshipNumber: string;
@@ -18,7 +18,7 @@ export interface IReqKyc {
   status: string;
 }
 
-// kyc-application interface - defines kyc application model
+// Kyc-application interface - defines kyc application model
 export interface IKycApplication {
   id: string;
   userId: string;

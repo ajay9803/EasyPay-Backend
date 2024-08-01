@@ -7,7 +7,9 @@ import BaseModel from "./base";
 
 export class UserModel extends BaseModel {
   // create user
-  static createUser = async (user: Omit<User, "id" | "permissions">) => {
+  static createUser = async (
+    user: Omit<User, "id" | "permissions" | "isVerified">
+  ) => {
     const userToCreate = {
       username: user.username,
       email: user.email,
@@ -68,6 +70,7 @@ export class UserModel extends BaseModel {
         "is_verified",
         "created_at",
         "updated_at",
+        "easy_pay_points",
         "password"
       )
       .from("users")
@@ -82,7 +85,7 @@ export class UserModel extends BaseModel {
     id: string,
 
     // omit id and permissions - use necessary data
-    theUser: Omit<User, "id" | "permissions">
+    theUser: Omit<User, "id" | "permissions" | "isVerified">
   ) => {
     let updatedAt = new Date();
 
@@ -146,6 +149,16 @@ export class UserModel extends BaseModel {
 
     await this.queryBuilder()
       .update({ password: newPassword, updatedAt: updatedAt })
+      .from("users")
+      .where("id", id);
+  };
+
+  // set new password
+  static updateBalance = async (id: string, newBalance: number) => {
+    let updatedAt = new Date();
+
+    await this.queryBuilder()
+      .update({ balance: newBalance, updatedAt: updatedAt })
       .from("users")
       .where("id", id);
   };

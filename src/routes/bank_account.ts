@@ -5,7 +5,7 @@ import { authorize } from "../middlewares/authorize";
 
 const router = express();
 
-// route to fetch linked-bank accounts
+// Route to fetch linked-bank accounts
 router.get(
   "/bank-accounts",
   authenticate,

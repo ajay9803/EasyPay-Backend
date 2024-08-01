@@ -5,10 +5,12 @@ import {
   getBalanceTransferStatements,
   fetchLoadFundTransactions,
 } from "../controllers/statement";
+import { validateReqQuery } from "../middlewares/validator";
+import { fetchBalanceTransferStatementQuerySchema } from "../schemas/statement";
 
 const router = express();
 
-// route to fetch load-fund statements
+// Route to fetch load-fund statements
 router.get(
   "/load-fund",
   authenticate,
@@ -16,11 +18,12 @@ router.get(
   fetchLoadFundTransactions
 );
 
-// route to fetch balance-transfer statements
+// Route to fetch balance-transfer statements
 router.get(
   "/balance-transfer",
+  validateReqQuery(fetchBalanceTransferStatementQuerySchema),
   authenticate,
-  authorize("users.delete"),
+  authorize("users.fetch-balance-transfer-statements"),
   getBalanceTransferStatements
 );
 

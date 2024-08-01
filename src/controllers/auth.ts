@@ -48,7 +48,6 @@ export const sendChangeEmailOtp = async (
 ): Promise<void> => {
   try {
     const { email } = req.body;
-    console.log("Email", email);
 
     const result = await AuthService.sendUpdateEmailOtp(email);
     res.status(result.statusCode).json(result);
@@ -64,7 +63,6 @@ export const sendForgotPasswordLink = async (
 ) => {
   try {
     const { email } = req.body;
-    console.log("Email", email);
 
     const result = await AuthService.sendForgotPasswordLink(email);
     res.status(result.statusCode).json(result);

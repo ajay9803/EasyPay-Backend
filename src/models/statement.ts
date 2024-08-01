@@ -24,7 +24,6 @@ export class StatementModel extends BaseModel {
     startDate: number,
     endDate: number
   ) => {
-    console.log("The user id is: ", userId);
     const query = this.queryBuilder()
       .select()
       .from("balance_transfer_statements")

@@ -1,5 +1,16 @@
 import Joi from "joi";
 
+/**
+ * The Joi schema to validate the request body for loading balance.
+ *
+ * @typedef {Object} LoadBalanceBodySchema
+ * @property {number} bankAccountId - The ID of the bank account to load balance.
+ * @property {number} amount - The amount to load into the bank account.
+ * @property {string} purpose - The purpose of loading the balance.
+ * @property {string} remarks - Any additional remarks for the balance load.
+ *
+ * @returns {Joi.ObjectSchema} The Joi schema for the request body.
+ */
 export const loadBalanceBodySchema = Joi.object({
   bankAccountId: Joi.number().required().messages({
     "number.base": '"bankAccountId" should be a number.',
@@ -20,6 +31,16 @@ export const loadBalanceBodySchema = Joi.object({
   stripUnknown: true,
 });
 
+/**
+ * The Joi schema to validate the request body for transferring balance.
+ *
+ * @typedef {Object} TransferBalanceBodySchema
+ * @property {string} receiverEmail - The email of the receiver.
+ * @property {number} amount - The amount to transfer.
+ * @property {string} purpose - The purpose of transfer.
+ *
+ * @returns {Joi.ObjectSchema} The Joi schema for the request body.
+ */
 export const transferBalanceBodySchema = Joi.object({
   receiverEmail: Joi.string().email().required().messages({
     "string.email": '"receiverEmail" must be a valid email.',

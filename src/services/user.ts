@@ -14,7 +14,7 @@ export const add = (a: number, b: number) => {
 
 // create new user
 export const createUser = async (
-  user: Omit<User, "id" | "permissions">,
+  user: Omit<User, "id" | "permissions" | "isVerified">,
   otp: string
 ) => {
   const verifyOtp = await AuthService.verifyOtp(user.email, otp);
@@ -86,7 +86,7 @@ export const getUserByEmail = async (email: string) => {
 // update user by id
 export const updateUserById = async (
   id: string,
-  theUser: Omit<User, "id" | "permissions">
+  theUser: Omit<User, "id" | "permissions" | "isVerified">
 ) => {
   // hash the password - to store hashed password to the users data
   const hashedPassword = await bcrypt.hash(theUser.password, 10);
@@ -123,7 +123,6 @@ export const updatePassword = async (
   const user = await UserModel.getUserById(id);
 
   if (user) {
-    console.log(oldPassword, newPassword);
     const isOldPasswordValid = await bcrypt.compare(oldPassword, user.password);
 
     if (!isOldPasswordValid) {
