@@ -3,7 +3,7 @@ import { IUserById } from "../interfaces/user";
 import BaseModel from "./base";
 
 class NotificationModel extends BaseModel {
-  static createNotifications: (
+  static createBalanceTransferNotifications: (
     balanceTransferArgs: ITransferBalance,
     receiverUser: IUserById,
     senderUser: any,
@@ -33,6 +33,22 @@ class NotificationModel extends BaseModel {
       .table("notifications");
   };
 
+  static createBasicNotification = async (
+    userId: string,
+    message: string,
+    type: string,
+    dataId: string
+  ) => {
+    await this.queryBuilder()
+      .insert({
+        userId: userId,
+        message: message,
+        type: type,
+        dataId: dataId,
+      })
+      .table("notifications");
+  };
+
   static fetchNotifications = async (
     userId: string,
     size: number,
@@ -41,13 +57,15 @@ class NotificationModel extends BaseModel {
     const totalCount = await this.queryBuilder()
       .count()
       .from("notifications")
-      .where("user_id", userId).first();
+      .where("user_id", userId)
+      .first();
     const notifications = await this.queryBuilder()
       .from("notifications")
       .where("user_id", userId)
       .limit(size)
-      .offset((page - 1) * size).orderBy("created_at", "desc");
-    return {totalCount, notifications};
+      .offset((page - 1) * size)
+      .orderBy("created_at", "desc");
+    return { totalCount, notifications };
   };
 }
 

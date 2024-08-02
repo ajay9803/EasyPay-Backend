@@ -15,6 +15,21 @@ export const fetchLoadFundTransactions = async (userId: string) => {
   };
 };
 
+export const fetchLoadFundTransaction = async (transactionId: string, userId: string) => {
+  const transaction = await StatementModel.fetchLoadFundTransaction(
+    transactionId, userId
+  );
+
+  if (!transaction) {
+    throw new NotFoundError("Transaction not found.");
+  }
+  return {
+    statusCode: HttpStatusCodes.OK,
+    message: "Trasaction fetched successfully.",
+    transaction: transaction,
+  };
+};
+
 export const getBalanceTransferStatements = async (
   userId: string,
   page: number,

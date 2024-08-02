@@ -28,6 +28,23 @@ export const createNewUser = async (
   }
 };
 
+// controller to fetch all users
+export const fetchUsers = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { page, size } = req.query;
+
+    const result = await UserService.fetchUsers(+page!, +size!);
+
+    res.status(result.statusCode).json(result);
+  } catch (e) {
+    next(e);
+  }
+};
+
 // controller to fetch user by id
 export const getUserById = async (
   req: AuthRequest,
@@ -98,7 +115,7 @@ export const updateUserById = async (
 
 // controller to delete user by id
 export const deleteUserById = async (
-  req: Request,
+  req: AuthRequest,
   res: Response,
   next: NextFunction
 ) => {

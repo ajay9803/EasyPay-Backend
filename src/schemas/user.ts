@@ -155,12 +155,60 @@ export const getUserParamsSchema = Joi.object({
  * @returns {Joi.ObjectSchema} The Joi schema for the request body.
  */
 export const updatePasswordBodySchema = Joi.object({
-  oldPassword: Joi.string().required().messages({
-    "any.required": '"Old Password" is required.',
-  }),
-  newPassword: Joi.string().required().messages({
-    "any.required": '"New Password" is required.',
-  }),
+  oldPassword: Joi.string()
+    .required()
+    .min(8)
+    .messages({
+      "any.required": "Password is required..",
+      "string.min": "Password must be atleast 8 characters..",
+      "password.uppercase":
+        "Password must have atleast one uppercase character..",
+      "password.lowercase":
+        "Password must have atleast one lowercase character..",
+      "password.special": "Password must have atleast one special character..",
+    })
+    .custom((value, helpers) => {
+      if (!/[A-Z]/.test(value)) {
+        return helpers.error("password.uppercase");
+      }
+
+      if (!/[a-z]/.test(value)) {
+        return helpers.error("password.lowercase");
+      }
+
+      if (!/[!@#$%]/.test(value)) {
+        return helpers.error("password.special");
+      }
+
+      return value;
+    }),
+  newPassword: Joi.string()
+    .required()
+    .min(8)
+    .messages({
+      "any.required": "Password is required..",
+      "string.min": "Password must be atleast 8 characters..",
+      "password.uppercase":
+        "Password must have atleast one uppercase character..",
+      "password.lowercase":
+        "Password must have atleast one lowercase character..",
+      "password.special": "Password must have atleast one special character..",
+    })
+    .custom((value, helpers) => {
+      if (!/[A-Z]/.test(value)) {
+        return helpers.error("password.uppercase");
+      }
+
+      if (!/[a-z]/.test(value)) {
+        return helpers.error("password.lowercase");
+      }
+
+      if (!/[!@#$%]/.test(value)) {
+        return helpers.error("password.special");
+      }
+
+      return value;
+    }),
 }).options({ stripUnknown: true });
 
 /**
@@ -173,9 +221,33 @@ export const updatePasswordBodySchema = Joi.object({
  * @returns {Joi.ObjectSchema} The Joi schema for the request body.
  */
 export const setNewPasswordBodySchema = Joi.object({
-  password: Joi.string().required().messages({
-    "any.required": '"Password" is required.',
-  }),
+  password: Joi.string()
+    .required()
+    .min(8)
+    .messages({
+      "any.required": "Password is required..",
+      "string.min": "Password must be atleast 8 characters..",
+      "password.uppercase":
+        "Password must have atleast one uppercase character..",
+      "password.lowercase":
+        "Password must have atleast one lowercase character..",
+      "password.special": "Password must have atleast one special character..",
+    })
+    .custom((value, helpers) => {
+      if (!/[A-Z]/.test(value)) {
+        return helpers.error("password.uppercase");
+      }
+
+      if (!/[a-z]/.test(value)) {
+        return helpers.error("password.lowercase");
+      }
+
+      if (!/[!@#$%]/.test(value)) {
+        return helpers.error("password.special");
+      }
+
+      return value;
+    }),
   otp: Joi.string().required().messages({
     "any.required": '"OTP" is required.',
   }),

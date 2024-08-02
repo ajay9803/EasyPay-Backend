@@ -15,11 +15,12 @@ export class QuizModel extends BaseModel {
       .table("quiz_data");
   };
 
-  static fetchQuizData = async (userId: string) => {
+  static fetchQuizData = async (userId: string, date: string) => {
     const quizData = await this.queryBuilder()
       .select()
-      .where("user_id", userId)
-      .table("quiz_data")
+      .from("quiz_data")
+      .where("user_id", userId).where("date", date)
+      
       .first();
 
     return quizData;

@@ -50,13 +50,20 @@ app.use(router);
 app.use(genericErrorHandler);
 
 io.on("connection", (socket: Socket) => {
-  socket.on("test", async (userId) => {
+  socket.on("balance-transfer", async ({ userId, amount, message }) => {
     console.log(userId);
-    // await SocketModel.fetchSocket(6).then((data) => {
-    //   console.log(data);
-    // }).catch((e) => {
-    //   console.log(e);
-    // });
+    await SocketModel.fetchSocket(userId)
+      .then((userSocket) => {
+        if (userSocket) {
+          console.log(userSocket);
+          io.to(userSocket.socketId).emit("balance-transfer", {amount, message});
+        } else {
+          return;
+        }
+      })
+      .catch((e) => {
+        console.log(e);
+      });
   });
 
   socket.on("disconnect", () => {

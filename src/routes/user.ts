@@ -1,13 +1,14 @@
 import express from "express";
 import {
   createNewUser,
-  deleteUserById,
   getUserByEmail,
   getUserById,
   updateUserById,
   updatePassword,
   updateEmail,
   setNewPassword,
+  fetchUsers,
+  deleteUserById,
 } from "../controllers/user";
 import { authenticate } from "../middlewares/auth";
 import { authorize } from "../middlewares/authorize";
@@ -83,6 +84,23 @@ router.patch(
   validateRequestParams(getUserParamsSchema),
   validateReqBody(setNewPasswordBodySchema),
   setNewPassword
+);
+
+// Fetch users
+router.get(
+  "/all",
+  authenticate,
+  authorize("users.fetch"),
+  fetchUsers
+);
+
+// Delete user
+router.get(
+  "/",
+  authenticate,
+  authorize("users.fetch"),
+  validateRequestParams(getUserParamsSchema),
+  deleteUserById
 );
 
 export default router;

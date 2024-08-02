@@ -16,6 +16,26 @@ export class StatementModel extends BaseModel {
     return loadFundTransactions;
   };
 
+  static fetchLoadFundTransaction = async (
+    transactionId: string,
+    userId: string
+  ) => {
+    const loadFundTransaction = await this.queryBuilder()
+      .select("load_fund_transactions.*", "mock_banks.name", "mock_banks.location", "mock_banks.image_url")
+      .from("load_fund_transactions")
+      .join(
+        "bank_accounts",
+        "load_fund_transactions.bank_account_id",
+        "bank_accounts.id"
+      )
+      .join("mock_banks", "bank_accounts.bank_id", "mock_banks.id")
+      .where("load_fund_transactions.id", transactionId)
+      .where("load_fund_transactions.user_id", userId)
+      .first();
+
+    return loadFundTransaction;
+  };
+
   static getBalanceTransferStatements = async (
     userId: string,
     page: number,

@@ -7,6 +7,8 @@ import HttpStatusCodes from "http-status-codes";
 import * as AuthService from "../services/auth";
 import { UnauthenticatedError } from "../error/unauthenticated_error";
 import BankAccountModel from "../models/bank_account";
+import { adminCheck } from "../utils/admin_check";
+import { UnauthorizedError } from "../error/unauthorized_error";
 
 export const add = (a: number, b: number) => {
   return a + b;
@@ -44,6 +46,21 @@ export const createUser = async (
     statusCode: HttpStatusCodes.CREATED,
     message: "User created successfully",
   };
+};
+
+export const fetchUsers = async (page: number, size: number) => {
+  const result = await UserModel.fetchUsers(page, size);
+
+  if (result.users.length === 0) {
+    throw new NotFoundError("No available users.");
+  } else {
+    return {
+      statusCode: HttpStatusCodes.OK,
+      message: "Users fetched successfully.",
+      users: result.users,
+      totalCount: result.totalCount.count,
+    };
+  }
 };
 
 // get user by id
@@ -107,6 +124,14 @@ export const updateUserById = async (
 
 // delete user by id
 export const deleteUserById = async (id: string) => {
+
+  const user = await UserModel.getUserById(id);
+
+  if (!user) {
+    throw new NotFoundError("User not found.");
+  } else if (user && adminCheck(user.roleId)) {
+    throw new UnauthorizedError("Task forbidden.");
+  }
   await UserModel.deleteUserById(id);
   return {
     statusCode: HttpStatusCodes.NO_CONTENT,

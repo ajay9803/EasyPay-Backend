@@ -24,7 +24,7 @@ export class BalanceModel extends BaseModel {
     balance: number,
     purpose: string,
     remarks: string
-  ): Promise<void> => {
+  ): Promise<any> => {
     // Fetch the bank account details
     const bankAccount = await this.queryBuilder()
       .select("amount")
@@ -37,6 +37,19 @@ export class BalanceModel extends BaseModel {
     const userAccount = await UserModel.getUserById(userId);
 
     if (bankAccount && userAccount) {
+      const bankAccountDetails = await this.queryBuilder()
+        .select(
+          "bank_accounts.*",
+          "mock_banks.name",
+          "mock_banks.location",
+          "mock_banks.image_url",
+          "mock_banks.est_date"
+        )
+        .from("bank_accounts")
+        .join("mock_banks", "bank_accounts.bank_id", "mock_banks.id")
+        .where("bank_accounts.id", bankAccountId)
+        .first();
+
       // Check if the bank account has enough funds
       if (bankAccount.amount < balance) {
         throw new BadRequestError(
@@ -62,7 +75,7 @@ export class BalanceModel extends BaseModel {
         .where("id", userId);
 
       // Insert a record in the load fund transactions table
-      await this.queryBuilder()
+      const result = await this.queryBuilder()
         .insert({
           type: "Debit",
           user_id: userId,
@@ -71,7 +84,9 @@ export class BalanceModel extends BaseModel {
           purpose,
           remarks,
         })
-        .table("load_fund_transactions");
+        .table("load_fund_transactions").returning('id');
+      const transactionId = result[0];
+      return { bankAccountDetails, transactionId };
     } else {
       throw new NotFoundError("Your linked bank account was not found.");
     }
@@ -125,7 +140,7 @@ export class BalanceModel extends BaseModel {
 
     const statementId = statement[0].id;
 
-    await NotificationModel.createNotifications(
+    await NotificationModel.createBalanceTransferNotifications(
       balanceTransferArgs,
       receiverUser,
       senderUser,

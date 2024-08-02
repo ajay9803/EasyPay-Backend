@@ -27,6 +27,34 @@ export class UserModel extends BaseModel {
     return createdUser[0].id;
   };
 
+  static fetchUsers = async (page: number, size: number) => {
+    const totalCount = await this.queryBuilder()
+      .count()
+      .select()
+      .from("users")
+      .first();
+    const users = await this.queryBuilder()
+      .select(
+        "id",
+        "username",
+        "email",
+        "dob",
+        "gender",
+        "balance",
+        "role_id",
+        "is_verified",
+        "created_at",
+        "updated_at",
+        "easy_pay_points"
+      )
+      .from("users")
+      .limit(size)
+      .offset((page - 1) * size)
+      .orderBy("created_at", "desc");
+
+    return { totalCount, users };
+  };
+
   // fetch user by email
   static getUserByEmail = async (email: string) => {
     const user = await this.queryBuilder()
@@ -108,19 +136,7 @@ export class UserModel extends BaseModel {
 
   // delete user by id
   static deleteUserById = async (id: string) => {
-    // forbid admin from deleting itself
-    if (adminCheck(id)) {
-      throw new UnauthorizedError("Task forbidden.");
-    }
-    const existingUser = await this.queryBuilder()
-      .select()
-      .from("users")
-      .where("id", id)
-      .first();
-
-    if (existingUser) {
-      await this.queryBuilder().delete().from("users").where("id", id);
-    }
+    await this.queryBuilder().delete().from("users").where("id", id);
   };
 
   // update password

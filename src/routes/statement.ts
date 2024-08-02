@@ -4,6 +4,7 @@ import { authorize } from "../middlewares/authorize";
 import {
   getBalanceTransferStatements,
   fetchLoadFundTransactions,
+  fetchLoadFundTransaction
 } from "../controllers/statement";
 import { validateReqQuery } from "../middlewares/validator";
 import { fetchBalanceTransferStatementQuerySchema } from "../schemas/statement";
@@ -16,6 +17,14 @@ router.get(
   authenticate,
   authorize("users.load-balance"),
   fetchLoadFundTransactions
+);
+
+// Route to fetch load-fund statements
+router.get(
+  "/load-fund/:id",
+  authenticate,
+  authorize("users.load-balance"),
+  fetchLoadFundTransaction
 );
 
 // Route to fetch balance-transfer statements

@@ -6,6 +6,7 @@ import UserModel from "../models/user";
 import { BadRequestError } from "../error/bad_request_error";
 import { TransactionLimitModel } from "../models/transaction_limit";
 import { ITransactionLimit } from "../interfaces/transaction_limit";
+import NotificationModel from "../models/notification";
 
 export const loadBalance = async (
   userId: string,
@@ -20,7 +21,15 @@ export const loadBalance = async (
     amount,
     purpose,
     remarks
-  );
+  ).then(async (data: any) => {
+    console.log(data);
+    await NotificationModel.createBasicNotification(
+      userId,
+      `You've successfully loaded Rs.${amount}. from ${data.bankAccountDetails.name}.`,
+      "Load Balance",
+      data.transactionId.id,
+    );
+  });
   return {
     statusCode: HttpStatusCodes.OK,
     message: `You've successfully loaded Rs.${amount}.`,
@@ -80,7 +89,7 @@ export const transferBalance = async (
 
   await BalanceModel.transferBalance(
     balanceTransferArguments,
-    receiverUser,   
+    receiverUser,
     senderUser
   ).then(async () => {
     if (transactionLimit) {

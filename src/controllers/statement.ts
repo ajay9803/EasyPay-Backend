@@ -17,6 +17,22 @@ export const fetchLoadFundTransactions = async (
   }
 };
 
+export const fetchLoadFundTransaction = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const userId = req.user?.id;
+    const { id } = req.params;
+
+    const result = await StatementService.fetchLoadFundTransaction(id, userId!);
+    res.status(result.statusCode).json(result);
+  } catch (e) {
+    next(e);
+  }
+};
+
 export const getBalanceTransferStatements = async (
   req: AuthRequest,
   res: Response,
@@ -31,7 +47,7 @@ export const getBalanceTransferStatements = async (
       +size!,
       cashFlow!.toString(),
       +startDate!,
-      +endDate!,
+      +endDate!
     );
 
     res.status(result.statusCode).json(result);

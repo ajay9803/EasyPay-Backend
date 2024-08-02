@@ -1,6 +1,7 @@
 import { BadRequestError } from "../error/bad_request_error";
 import { NotFoundError } from "../error/not_found_error";
 import { EasyPayPointsModel } from "../models/easy_pay_point";
+import NotificationModel from "../models/notification";
 import UserModel from "../models/user";
 import HttpStatusCodes from "http-status-codes";
 
@@ -21,7 +22,6 @@ export const updateEasyPayPoints = async (userId: string, points: number) => {
   };
 };
 
-
 export const redeemEasyPayPoints = async (userId: string) => {
   const user = await UserModel.getUserById(userId);
 
@@ -40,7 +40,14 @@ export const redeemEasyPayPoints = async (userId: string) => {
 
   await EasyPayPointsModel.updateEasyPayPoints(userId, remainingPoints);
 
-  await UserModel.updateBalance(userId, newBalance);
+  await UserModel.updateBalance(userId, newBalance).then(async () => {
+    await NotificationModel.createBasicNotification(
+      userId,
+      `You redeemed Rs.${redeemedCash} from Easy Pay Points.`,
+      "Redeem Easy Pay Points",
+      "0"
+    );
+  });
 
   return {
     statusCode: HttpStatusCodes.OK,
