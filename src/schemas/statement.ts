@@ -1,5 +1,17 @@
 import Joi from "joi";
 
+
+/**
+ * The Joi schema to validate the query parameters for fetching balance transfer statements.
+ *
+ * @typedef {Object} FetchBalanceTransferStatementQuerySchema
+ * @property {number} page - The page number of the results.
+ * @property {number} size - The number of results per page.
+ * @property {string} cashFlow - The cash flow to filter the statements by (All, Debit, Credit).
+ * @property {number} startDate - The start date to filter the statements by.
+ * @property {number} endDate - The end date to filter the statements by.
+ * @returns {Joi.ObjectSchema} The Joi schema for the query parameters.
+ */
 export const fetchBalanceTransferStatementQuerySchema = Joi.object({
   page: Joi.number().integer().min(1).required().messages({
     "number.base": '"Page" must be a number.',

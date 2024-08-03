@@ -9,22 +9,21 @@ import rateLimiter from "express-rate-limit";
 import cors from "cors";
 import http from "http";
 import { Socket, Server as SocketIo } from "socket.io";
-import { ExtendedSocket } from "./interfaces/socket";
 import { SocketModel } from "./models/socket";
 
 const app = express();
 
-// rate - limiter configuration
+// Rate - limiter configuration
 const limiter = rateLimiter({
   windowMs: 60 * 1000, // 60,000 milliseconds
   limit: 10, // 10 requests per 60 seconds per each IP
   message: "Too many requests made.", // message on limit exceed
 });
 
-// protect the application from web vulnerabilities
+// Protects the application from web vulnerabilities
 app.use(helmet());
 
-// make use of limiter
+// Make use of limiter
 // app.use(limiter);
 
 const server = http.createServer(app);
@@ -40,23 +39,24 @@ export const io = new SocketIo(server, {
 
 app.use(express.json());
 
-// log request-method and request-url for easy debugging
+// Log request-method and request-url for easy debugging
 app.use(requestLogger);
 
-// pass router
+// Pass router
 app.use(router);
 
-// pass error handling middleware
+// Pass error handling middleware
 app.use(genericErrorHandler);
 
 io.on("connection", (socket: Socket) => {
   socket.on("balance-transfer", async ({ userId, amount, message }) => {
-    console.log(userId);
     await SocketModel.fetchSocket(userId)
       .then((userSocket) => {
         if (userSocket) {
-          console.log(userSocket);
-          io.to(userSocket.socketId).emit("balance-transfer", {amount, message});
+          io.to(userSocket.socketId).emit("balance-transfer", {
+            amount,
+            message,
+          });
         } else {
           return;
         }
@@ -71,7 +71,7 @@ io.on("connection", (socket: Socket) => {
   });
 });
 
-// listen for connections on host/port
+// Listen for connections on host/port
 server.listen(config.port, () => {
   console.log(`Server started listening on port: ${config.port}`);
 });

@@ -86,7 +86,7 @@ router.patch(
   setNewPassword
 );
 
-// Fetch users
+// Route to fetch users
 router.get(
   "/all",
   authenticate,
@@ -94,7 +94,7 @@ router.get(
   fetchUsers
 );
 
-// Delete user
+// Route to delete user
 router.get(
   "/",
   authenticate,

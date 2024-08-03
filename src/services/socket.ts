@@ -2,16 +2,31 @@ import { NotFoundError } from "../error/not_found_error";
 import { SocketModel } from "../models/socket";
 import HttpStatusCodes from "http-status-codes";
 
-export const createSocket = async (socketId: string, userId: number) => {
+/**
+ * Creates a socket for the given user.
+ *
+ * @param {string} socketId - The ID of the socket.
+ * @param {number} userId - The ID of the user.
+ * @return {Promise<{
+ *     statusCode: number,
+ *     message: string,
+ * }>} - The result of the socket creation.
+ * @throws {NotFoundError} - If the user socket does not exist.
+ */
+export const createSocket = async (
+  socketId: string,
+  userId: number
+): Promise<{
+  statusCode: number;
+  message: string;
+}> => {
+  const userSocket = await SocketModel.fetchSocket(userId);
 
-    const userSocket = await SocketModel.fetchSocket(userId);
-
-    if (!userSocket) {
-        await SocketModel.createSocket(socketId, userId);
-    } else {
-        await SocketModel.updateSocket(socketId, userId);
-    }
-  
+  if (!userSocket) {
+    await SocketModel.createSocket(socketId, userId);
+  } else {
+    await SocketModel.updateSocket(socketId, userId);
+  }
 
   return {
     statusCode: HttpStatusCodes.OK,
@@ -19,7 +34,22 @@ export const createSocket = async (socketId: string, userId: number) => {
   };
 };
 
-export const deleteSocket = async (userId: number) => {
+/**
+ * Deletes a socket for the given user.
+ *
+ * @param {number} userId - The ID of the user.
+ * @return {Promise<{
+ *     statusCode: number,
+ *     message: string,
+ * }>} - The result of the socket deletion.
+ * @throws {NotFoundError} - If the user socket does not exist.
+ */
+export const deleteSocket = async (
+  userId: number
+): Promise<{
+  statusCode: number;
+  message: string;
+}> => {
   const userSocket = await SocketModel.fetchSocket(userId);
 
   if (!userSocket) {

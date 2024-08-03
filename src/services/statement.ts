@@ -2,7 +2,22 @@ import { NotFoundError } from "../error/not_found_error";
 import { StatementModel } from "../models/statement";
 import HttpStatusCodes from "http-status-codes";
 
-export const fetchLoadFundTransactions = async (userId: string) => {
+/**
+ * Fetches the load fund transactions for a user.
+ *
+ * @param {string} userId - The ID of the user.
+ * @return {Promise<{
+ *   statusCode: number,
+ *   message: string,
+ *   transactions: Array<object>
+ * }>} - The fetched load fund transactions.
+ * @throws {NotFoundError} - If no load fund transactions are found for the user.
+ */
+export const fetchLoadFundTransactions = async (userId: string): Promise<{
+  statusCode: number;
+  message: string;
+  transactions: Array<object>;
+}> => {
   const transactions = await StatementModel.fetchLoadFundTransactions(userId);
 
   if (transactions.length === 0) {
@@ -15,7 +30,23 @@ export const fetchLoadFundTransactions = async (userId: string) => {
   };
 };
 
-export const fetchLoadFundTransaction = async (transactionId: string, userId: string) => {
+/**
+ * Fetches a load fund transaction by its ID for a user.
+ *
+ * @param {string} transactionId - The ID of the transaction.
+ * @param {string} userId - The ID of the user.
+ * @return {Promise<{
+ *   statusCode: number,
+ *   message: string,
+ *   transaction: object
+ * }>} - The fetched load fund transaction.
+ * @throws {NotFoundError} - If the transaction is not found for the user.
+ */
+export const fetchLoadFundTransaction = async (transactionId: string, userId: string): Promise<{
+  statusCode: number;
+  message: string;
+  transaction: object;
+}> => {
   const transaction = await StatementModel.fetchLoadFundTransaction(
     transactionId, userId
   );
@@ -30,6 +61,22 @@ export const fetchLoadFundTransaction = async (transactionId: string, userId: st
   };
 };
 
+/**
+ * Fetches balance transfer statements for a user.
+ *
+ * @param {string} userId - The ID of the user.
+ * @param {number} page - The page number of the results.
+ * @param {number} size - The number of results per page.
+ * @param {string} cashFlow - The cash flow to filter the statements by (All, Debit, Credit).
+ * @param {number} startDate - The start date to filter the statements by.
+ * @param {number} endDate - The end date to filter the statements by.
+ * @return {Promise<{
+ *   statusCode: number,
+ *   message: string,
+ *   statements: object[],
+ *   totalCount: number
+ * }>} - The fetched balance transfer statements.
+ */
 export const getBalanceTransferStatements = async (
   userId: string,
   page: number,
@@ -37,7 +84,12 @@ export const getBalanceTransferStatements = async (
   cashFlow: string,
   startDate: number,
   endDate: number
-) => {
+): Promise<{
+    statusCode: number;
+    message: string;
+    statements: object[];
+    totalCount: number;
+  }> => {
   const resultObject = await StatementModel.getBalanceTransferStatements(
     userId,
     page,

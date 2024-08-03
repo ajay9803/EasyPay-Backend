@@ -7,7 +7,7 @@ import {
   getDownloadURL,
 } from "firebase/storage";
 
-// configurations for firebase
+// Configurations for firebase
 const firebaseConfig = {
   apiKey: config.firebase.FIREBASE_API_KEY,
   authDomain: config.firebase.FIREBASE_AUTH_DOMAIN,
@@ -18,10 +18,10 @@ const firebaseConfig = {
   measurementId: config.firebase.FIREBASE_MEASUREMENT_ID,
 };
 
-// initialize firebase
+// Initialize firebase
 const app = initializeApp(firebaseConfig);
 
-// initialize firebase storage
+// Initialize firebase storage
 const storage = getStorage(app);
 
 export { storage, ref, uploadBytesResumable, getDownloadURL };

@@ -2,7 +2,20 @@ import { ConflictError } from "../error/conflict_error";
 import { QuizModel } from "../models/quiz";
 import HttpStatusCodes from "http-status-codes";
 
-export const createTheQuizData = async (userId: string, points: number) => {
+/**
+ * Creates the quiz data for a user.
+ *
+ * @async
+ * @function createTheQuizData
+ * @param {string} userId - The ID of the user.
+ * @param {number} points - The points scored in the quiz.
+ * @throws {ConflictError} If the user has already played the quiz today.
+ * @returns {Promise<{statusCode: number, message: string}>} The status code and message indicating the result of the operation.
+ */
+export const createTheQuizData = async (
+  userId: string,
+  points: number
+): Promise<{ statusCode: number; message: string }> => {
   const date = new Date();
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, "0");
@@ -22,7 +35,18 @@ export const createTheQuizData = async (userId: string, points: number) => {
   };
 };
 
-export const fetchTheQuizData = async (userId: string) => {
+/**
+ * Fetches the quiz data for a user.
+ *
+ * @async
+ * @function fetchTheQuizData
+ * @param {string} userId - The ID of the user.
+ * @throws {ConflictError} If the user has already played the quiz today.
+ * @returns {Promise<{statusCode: number, message: string}>} The status code and message indicating the result of the operation.
+ */
+export const fetchTheQuizData = async (
+  userId: string
+): Promise<{ statusCode: number; message: string }> => {
   const date = new Date();
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, "0");

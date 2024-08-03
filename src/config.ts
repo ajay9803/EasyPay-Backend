@@ -2,7 +2,7 @@ import dotenv from "dotenv";
 
 dotenv.config({ path: __dirname + "/../.env" });
 
-// configurations for port, jwt-secret and tokens, database, email-service and firebase
+// Configurations for port, jwt-secret and tokens, database, email-service and firebase
 const config = {
   port: process.env.PORT,
   jwt: {

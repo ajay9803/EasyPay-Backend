@@ -8,9 +8,7 @@ import { UnauthorizedError } from "../error/unauthorized_error";
  * @param {string} permission - The required permission to access the resource.
  * @return {Function} - Express middleware function that checks the user's permissions and calls the next middleware or throws an UnauthorizedError if the permission is not included.
  */
-export const authorize = (
-  permission: string
-) => {
+export const authorize = (permission: string) => {
   return (req: Request, res: Response, next: NextFunction) => {
     try {
       // Get request object with user data
@@ -20,6 +18,8 @@ export const authorize = (
       if (!user.permissions.includes(permission)) {
         next(new UnauthorizedError("Your access is forbidden."));
       }
+
+      // Continue to the next function
       next();
     } catch (e) {
       // Throw any occuring error

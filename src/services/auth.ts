@@ -10,15 +10,32 @@ import UserModel from "../models/user";
 import AuthModel from "../models/auth";
 import * as EmailService from "../utils/node_mailer";
 
-export const verifyOtp = async (email: string, otp: string) => {
+/**
+ * Verify Otp Function
+ */
+/**
+ * Verify Otp Function
+ *
+ * @param {string} email - The email address associated with the OTP.
+ * @param {string} otp - The OTP to verify.
+ * @return {Promise<boolean>} A promise that resolves to a boolean indicating
+ * whether the OTP is valid or not.
+ * @throws {InvalidError} If the OTP doesn't match.
+ */
+export const verifyOtp = async (
+  email: string,
+  otp: string
+): Promise<boolean> => {
   const existingOtp = await AuthModel.findOtpByEmail(email);
   if (existingOtp) {
-    let currentTime = new Date();
-    const otpCreationTime = new Date(existingOtp.createdAt);
-    const timeDifference =
-      (currentTime.getTime() - otpCreationTime.getTime()) / 1000;
+    // let currentTime = new Date();
+    // const otpCreationTime = new Date(existingOtp.createdAt);
+    // const timeDifference =
+    //   (currentTime.getTime() - otpCreationTime.getTime()) / 1000;
 
-    // if (timeDifference <= 60) {
+    /**
+     * Check if the Otp sent is equal to the recent Otp in the database
+     */
     if (existingOtp.otp === otp) {
       return true;
     } else {
@@ -29,7 +46,16 @@ export const verifyOtp = async (email: string, otp: string) => {
   }
 };
 
-export const sendSignupOtp = async (email: string) => {
+/**
+ * Sends a signup OTP to the specified email address.
+ *
+ * @param {string} email - The email address to send the OTP to.
+ * @return {Promise<{statusCode: number, message: string, otp: string}>} A promise that resolves when the OTP is sent
+ * successfully.
+ */
+export const sendSignupOtp = async (
+  email: string
+): Promise<{ statusCode: number; message: string; otp: string }> => {
   let otp = EmailService.generateOtp();
 
   const exitingOtp = await AuthModel.findOtpByEmail(email);
@@ -48,7 +74,19 @@ export const sendSignupOtp = async (email: string) => {
   };
 };
 
-export const sendUpdateEmailOtp = async (email: string) => {
+/**
+ * Sends a change email OTP to the specified email address.
+ *
+ * @param {string} email - The email address to send the OTP to.
+ * @return {Promise<{statusCode: number, message: string, otp: string}>} - A promise that resolves when the OTP is sent
+ * successfully. The resolved value is an object with the following properties:
+ *   - `statusCode` {number} - The HTTP status code indicating the success of the operation.
+ *   - `message` {string} - A message indicating the success of the operation.
+ *   - `otp` {string} - The OTP sent to the user's email for verification.
+ */
+export const sendUpdateEmailOtp = async (
+  email: string
+): Promise<{ statusCode: number; message: string; otp: string }> => {
   let otp = EmailService.generateOtp();
 
   const exitingOtp = await AuthModel.findOtpByEmail(email);
@@ -67,7 +105,18 @@ export const sendUpdateEmailOtp = async (email: string) => {
   };
 };
 
-export const sendForgotPasswordLink = async (email: string) => {
+/**
+ * Sends a forgot password link to the specified email address.
+ *
+ * @param {string} email - The email address to send the link to.
+ * @return {Promise<{statusCode: number, message: string}>} - A promise that resolves when the link is sent
+ * successfully. The resolved value is an object with the following properties:
+ *   - `statusCode` {number} - The HTTP status code indicating the success of the operation.
+ *   - `message` {string} - A message indicating the success of the operation.
+ */
+export const sendForgotPasswordLink = async (
+  email: string
+): Promise<{ statusCode: number; message: string }> => {
   let otp = EmailService.generateOtp();
 
   const exitingOtp = await AuthModel.findOtpByEmail(email);
@@ -91,29 +140,52 @@ export const sendForgotPasswordLink = async (email: string) => {
   }
 };
 
-export const login = async (email: string, userPassword: string) => {
-  // fetch existing user by email
+/**
+ * Handles the login request.
+ *
+ * @param {string} email - The email address of the user.
+ * @param {string} userPassword - The password of the user.
+ * @return {Promise<{statusCode: number, message: string, user: User, accessToken: string, refreshToken: string}>} - A promise that resolves when the login is successful.
+ * The resolved value is an object with the following properties:
+ *   - `statusCode` {number} - The HTTP status code indicating the success of the operation.
+ *   - `message` {string} - A message indicating the success of the operation.
+ *   - `user` {User} - The user object.
+ *   - `accessToken` {string} - The access token for the user.
+ * @throws {NotFoundError} If no user is found with the associated email.
+ * @throws {UnauthenticatedError} If the email or password is incorrect.
+ */
+export const login = async (
+  email: string,
+  userPassword: string
+): Promise<{
+  statusCode: number;
+  message: string;
+  user: User;
+  accessToken: string;
+  refreshToken: string;
+}> => {
+  // Fetch existing user by email
   const existingUser = await UserModel.getUserByEmail(email);
 
-  // throw error when the user data is null
+  // Throw error when the user data is null
   if (!existingUser) {
     const error = new NotFoundError("No user found with associated email.");
     throw error;
   }
 
-  // check for password validation
+  // Check for password validation
   const isValidPassword = await bcrypt.compare(
     userPassword,
     existingUser.password
   );
 
-  // throw error on invalid password
+  // Throw error on invalid password
   if (!isValidPassword) {
     const error = new UnauthenticatedError("Invalid email or password.");
     throw error;
   }
 
-  // create a payload
+  // Create a payload
   const payload = {
     id: existingUser.id,
     name: existingUser.name,
@@ -122,19 +194,19 @@ export const login = async (email: string, userPassword: string) => {
     isVerified: existingUser.isVerified,
   };
 
-  // create access token
+  // Create access token
   const accessToken = sign(payload, config.jwt.jwt_secret!, {
     expiresIn: config.jwt.accesstoken_expiry,
   });
 
-  // create refresh token
+  // Create refresh token
   const refreshToken = sign(payload, config.jwt.jwt_secret!, {
     expiresIn: config.jwt.refreshtoken_expiry,
   });
 
   const { password, ...userWithoutPassword } = existingUser;
 
-  // return success message
+  // Return success message
   return {
     statusCode: HttpStatusCodes.OK,
     message: "User login successful.",
@@ -146,31 +218,31 @@ export const login = async (email: string, userPassword: string) => {
 
 export const refreshAccessToken = (refreshToken: string) => {
   try {
-    // split the token on empty spacing
+    // Split the token on empty spacing
     const token = refreshToken.split(" ");
 
-    // check if the bearer token is provided
+    // Check if the bearer token is provided
     if (token.length !== 2 || token[0] !== "Bearer") {
-      // throw error if token isn't provided
+      // Throw error if token isn't provided
       const error = new NotFoundError("No Bearer token provided.");
       throw error;
     }
 
     let bearerToken = token[1];
 
-    // get data by verifying the token
+    // Get data by verifying the token
     const decodedToken = verify(bearerToken, config.jwt.jwt_secret!) as Omit<
       User,
       "password"
     >;
 
     if (!decodedToken) {
-      // throw error if token is null
+      // Throw error if token is null
       const error = new UnauthenticatedError("Invalid token provided.");
       throw error;
     }
 
-    // create a payload from verified token
+    // Create a payload from verified token
     const payload = {
       id: decodedToken.id,
       name: decodedToken.username,
@@ -178,12 +250,12 @@ export const refreshAccessToken = (refreshToken: string) => {
       permissions: decodedToken.permissions,
     };
 
-    // create new access token
+    // Create new access token
     const accessToken = sign(payload, config.jwt.jwt_secret!, {
       expiresIn: config.jwt.accesstoken_expiry,
     });
 
-    // return success message
+    // Return success message
     return { statusCode: HttpStatusCodes.OK, accessToken: accessToken };
   } catch (e) {
     if (e instanceof JsonWebTokenError) {

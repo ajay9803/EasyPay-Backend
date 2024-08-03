@@ -56,11 +56,23 @@ export const sendChangeEmailOtp = async (
   }
 };
 
+/**
+ * Sends a forgot password link to the specified email address.
+ *
+ * @param {Object} req - The request object.
+ * @param {Object} req.body - The request body containing the email.
+ * @param {string} req.body.email - The email address to send the link to.
+ * @param {Object} res - The response object.
+ * @param {Function} next - The next middleware function.
+ * @return {Promise<void>} A promise that resolves when the link is sent
+ * successfully.
+ * @throws {NotFoundError} If no user with the specified email is found.
+ */
 export const sendForgotPasswordLink = async (
   req: Request,
   res: Response,
   next: NextFunction
-) => {
+): Promise<void> => {
   try {
     const { email } = req.body;
 
@@ -71,12 +83,24 @@ export const sendForgotPasswordLink = async (
   }
 };
 
-// controller to login user
+
+/**
+ * Handles the login request.
+ *
+ * @param {Object} req - The request object.
+ * @param {Object} req.body - The request body containing the email and password.
+ * @param {string} req.body.email - The email address of the user.
+ * @param {string} req.body.password - The password of the user.
+ * @param {Object} res - The response object.
+ * @param {Function} next - The next middleware function.
+ * @return {Promise<void>} A promise that resolves when the login is successful.
+ * @throws {UnauthenticatedError} If the email or password is incorrect.
+ */
 export const login = async (
   req: Request,
   res: Response,
   next: NextFunction
-) => {
+): Promise<void> => {
   try {
     const { email, password } = req.body;
     const result = await AuthService.login(email, password);
@@ -89,7 +113,7 @@ export const login = async (
   }
 };
 
-// controller to refresh access token
+
 export const refreshAccessToken = async (
   req: Request,
   res: Response,

@@ -5,20 +5,37 @@ import NotificationModel from "../models/notification";
 import UserModel from "../models/user";
 import HttpStatusCodes from "http-status-codes";
 
-export const updateEasyPayPoints = async (userId: string, points: number) => {
+/**
+ * Updates the easy pay points of a user.
+ *
+ * @async
+ * @function updateEasyPayPoints
+ * @param {string} userId - The ID of the user.
+ * @param {number} points - The number of points to be updated.
+ * @throws {NotFoundError} If the user is not found.
+ * @throws {BadRequestError} If the user does not have enough points.
+ * @returns {Promise<{statusCode: number, message: string}>} The result of the update.
+ */
+export const updateEasyPayPoints = async (
+  userId: string,
+  points: number
+): Promise<{ statusCode: number; message: string }> => {
   const user = await UserModel.getUserById(userId);
 
   if (!user) {
     throw new NotFoundError("No user found.");
   }
 
+  /**
+   * Add up new points to existing user points.
+   */
   const newPoints: number = +user.easyPayPoints + points;
 
   await EasyPayPointsModel.updateEasyPayPoints(userId, newPoints);
 
   return {
     statusCode: HttpStatusCodes.OK,
-    messsage: "Points updated successfully.",
+    message: "Points updated successfully.",
   };
 };
 
@@ -30,9 +47,18 @@ export const redeemEasyPayPoints = async (userId: string) => {
   }
 
   const easyPayPoints = +user.easyPayPoints;
+
+  /**
+   * Check if the user has enough points to redeem.
+   */
   if (easyPayPoints < 50) {
     throw new BadRequestError("You do not have enough points to redeem.");
   }
+
+  /**
+   * Get remaining points.
+   * Redeem the cash equivalent of the points.
+   */
   const remainingPoints = easyPayPoints % 50;
   const redeemedCash = Math.floor(easyPayPoints / 50) * 5;
 

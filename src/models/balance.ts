@@ -84,7 +84,8 @@ export class BalanceModel extends BaseModel {
           purpose,
           remarks,
         })
-        .table("load_fund_transactions").returning('id');
+        .table("load_fund_transactions")
+        .returning("id");
       const transactionId = result[0];
       return { bankAccountDetails, transactionId };
     } else {

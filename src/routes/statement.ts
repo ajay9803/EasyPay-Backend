@@ -19,7 +19,7 @@ router.get(
   fetchLoadFundTransactions
 );
 
-// Route to fetch load-fund statements
+// Route to fetch single load-fund statement
 router.get(
   "/load-fund/:id",
   authenticate,

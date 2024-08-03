@@ -38,7 +38,7 @@ export const authenticate = (
       return;
     }
 
-    // Verify token
+    // Verify the token
     const decodedToken = verify(token[1], config.jwt.jwt_secret!) as Omit<
       User,
       "password"

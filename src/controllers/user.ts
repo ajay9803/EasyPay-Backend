@@ -2,16 +2,25 @@ import * as UserService from "../services/user";
 import { NextFunction, Request, Response } from "express";
 import { Request as AuthRequest } from "../interfaces/auth";
 
-// controller to create new user
+/**
+ * Create a new user in the database.
+ *
+ * @param {Request} req - The request object containing the user details.
+ * @param {Response} res - The response object to send the result.
+ * @param {NextFunction} next - The next function to call in the middleware chain.
+ * @return {Promise<void>} - A promise that resolves when the user is created.
+ */
 export const createNewUser = async (
   req: Request,
   res: Response,
   next: NextFunction
-) => {
+): Promise<void> => {
   try {
     const { username, email, password, dob, gender, otp } = req.body;
 
-    // create new user
+    /**
+     * Create user based on req-data
+     */
     let newUser = {
       username: username,
       email: email,
@@ -21,19 +30,27 @@ export const createNewUser = async (
     };
 
     const result = await UserService.createUser(newUser, otp);
-    // send success message
+
+    // Send success message
     res.status(result.statusCode).send(result);
   } catch (e) {
     next(e);
   }
 };
 
-// controller to fetch all users
+/**
+ * Fetches users from the database.
+ *
+ * @param {Request} req - The request object containing the pagination details.
+ * @param {Response} res - The response object to send the result.
+ * @param {NextFunction} next - The next function to call in the middleware chain.
+ * @return {Promise<void>} - A promise that resolves when the users are fetched.
+ */
 export const fetchUsers = async (
   req: Request,
   res: Response,
   next: NextFunction
-) => {
+): Promise<void> => {
   try {
     const { page, size } = req.query;
 
@@ -45,7 +62,6 @@ export const fetchUsers = async (
   }
 };
 
-// controller to fetch user by id
 export const getUserById = async (
   req: AuthRequest,
   res: Response,

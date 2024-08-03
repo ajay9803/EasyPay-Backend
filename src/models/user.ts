@@ -6,10 +6,16 @@ import { adminCheck } from "../utils/admin_check";
 import BaseModel from "./base";
 
 export class UserModel extends BaseModel {
-  // create user
+  /**
+   * Creates a new user in the database.
+   *
+   * @param {Omit<User, "id" | "permissions" | "isVerified">} user - The user object containing the user's information.
+   * @return {Promise<number>} The ID of the newly created user.
+   * @throws {BadRequestError} If the user already exists.
+   */
   static createUser = async (
     user: Omit<User, "id" | "permissions" | "isVerified">
-  ) => {
+  ): Promise<number> => {
     const userToCreate = {
       username: user.username,
       email: user.email,
@@ -27,7 +33,18 @@ export class UserModel extends BaseModel {
     return createdUser[0].id;
   };
 
-  static fetchUsers = async (page: number, size: number) => {
+  /**
+   * Fetches users from the database.
+   *
+   * @param {number} page - The page number of the results.
+   * @param {number} size - The number of results per page.
+   * @return {Promise<{users: User[], totalCount: {count: string}}>} An object containing the fetched users and the total count of users.
+   * @throws {NotFoundError} If no users are found.
+   */
+  static fetchUsers = async (
+    page: number,
+    size: number
+  ): Promise<{ users: User[]; totalCount: { count: string } }> => {
     const totalCount = await this.queryBuilder()
       .count()
       .select()
@@ -55,8 +72,13 @@ export class UserModel extends BaseModel {
     return { totalCount, users };
   };
 
-  // fetch user by email
-  static getUserByEmail = async (email: string) => {
+  /**
+   * Fetches a user from the database based on the provided email.
+   *
+   * @param {string} email - The email of the user to fetch.
+   * @return {Promise<User | null>} The user object if found, null otherwise.
+   */
+  static getUserByEmail = async (email: string): Promise<any> => {
     const user = await this.queryBuilder()
       .select()
       .from("users")
@@ -84,8 +106,13 @@ export class UserModel extends BaseModel {
     return user;
   };
 
-  // fetch user by id
-  static getUserById = async (id: string) => {
+  /**
+   * Fetches a user from the database based on the provided ID.
+   *
+   * @param {string} id - The ID of the user to fetch.
+   * @return {Promise<any>} The user object if found, null otherwise.
+   */
+  static getUserById = async (id: string): Promise<any> => {
     const user = await this.queryBuilder()
       .select(
         "id",
@@ -108,13 +135,19 @@ export class UserModel extends BaseModel {
     return user;
   };
 
-  // update user by id
+  /**
+   * Updates a user in the database based on the provided ID.
+   *
+   * @param {string} id - The ID of the user to update.
+   * @param {Omit<User, "id" | "permissions" | "isVerified">} theUser - The user object with the updated data.
+   * @return {Promise<User | null>} The updated user object if successful, null otherwise.
+   */
   static updateUserById = async (
     id: string,
 
-    // omit id and permissions - use necessary data
+    // Omit id and permissions - use necessary data
     theUser: Omit<User, "id" | "permissions" | "isVerified">
-  ) => {
+  ): Promise<User | null> => {
     let updatedAt = new Date();
 
     const user = await this.queryBuilder()
@@ -134,13 +167,27 @@ export class UserModel extends BaseModel {
     return user;
   };
 
-  // delete user by id
-  static deleteUserById = async (id: string) => {
+  /**
+   * Deletes a user from the database based on the provided ID.
+   *
+   * @param {string} id - The ID of the user to delete.
+   * @return {Promise<void>} A promise that resolves when the deletion is complete.
+   */
+  static deleteUserById = async (id: string): Promise<void> => {
     await this.queryBuilder().delete().from("users").where("id", id);
   };
 
-  // update password
-  static updatePassword = async (id: string, newPassword: string) => {
+  /**
+   * Updates the password of a user in the database.
+   *
+   * @param {string} id - The ID of the user whose password is being updated.
+   * @param {string} newPassword - The new password for the user.
+   * @return {Promise<void>} A Promise that resolves when the password update is complete.
+   */
+  static updatePassword = async (
+    id: string,
+    newPassword: string
+  ): Promise<void> => {
     let updatedAt = new Date();
 
     await this.queryBuilder()
@@ -150,7 +197,14 @@ export class UserModel extends BaseModel {
   };
 
   // update email
-  static updateEmail = async (id: string, email: string) => {
+  /**
+   * Updates the email of a user in the database.
+   *
+   * @param {string} id - The ID of the user whose email is being updated.
+   * @param {string} email - The new email for the user.
+   * @return {Promise<void>} A Promise that resolves when the email update is complete.
+   */
+  static updateEmail = async (id: string, email: string): Promise<void> => {
     let updatedAt = new Date();
 
     await this.queryBuilder()
@@ -159,8 +213,17 @@ export class UserModel extends BaseModel {
       .where("id", id);
   };
 
-  // set new password
-  static setNewPassword = async (id: string, newPassword: string) => {
+  /**
+   * Updates the password of a user in the database.
+   *
+   * @param {string} id - The ID of the user whose password is being updated.
+   * @param {string} newPassword - The new password for the user.
+   * @return {Promise<void>} A Promise that resolves when the password update is complete.
+   */
+  static setNewPassword = async (
+    id: string,
+    newPassword: string
+  ): Promise<void> => {
     let updatedAt = new Date();
 
     await this.queryBuilder()
@@ -169,8 +232,17 @@ export class UserModel extends BaseModel {
       .where("id", id);
   };
 
-  // set new password
-  static updateBalance = async (id: string, newBalance: number) => {
+  /**
+   * Updates the balance of a user in the database.
+   *
+   * @param {string} id - The ID of the user whose balance is being updated.
+   * @param {number} newBalance - The new balance for the user.
+   * @return {Promise<void>} A Promise that resolves when the balance update is complete.
+   */
+  static updateBalance = async (
+    id: string,
+    newBalance: number
+  ): Promise<void> => {
     let updatedAt = new Date();
 
     await this.queryBuilder()

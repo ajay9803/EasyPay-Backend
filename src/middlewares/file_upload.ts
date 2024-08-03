@@ -27,6 +27,9 @@ const fileFilter = (
 
 // Multer upload middleware
 const uploader = multer({
+  /**
+   * Store files in memory as buffer object
+   */
   storage: multer.memoryStorage(),
   fileFilter: fileFilter,
 });

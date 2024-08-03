@@ -10,15 +10,26 @@ import BankAccountModel from "../models/bank_account";
 import { adminCheck } from "../utils/admin_check";
 import { UnauthorizedError } from "../error/unauthorized_error";
 
-export const add = (a: number, b: number) => {
-  return a + b;
-};
 
-// create new user
+
+/**
+ * Creates a new user in the database.
+ *
+ * @param {Object} user - The user object containing the user details.
+ * @param {string} user.username - The username of the user.
+ * @param {string} user.email - The email address of the user.
+ * @param {string} user.password - The password of the user.
+ * @param {Date} user.dob - The date of birth of the user.
+ * @param {string} user.gender - The gender of the user.
+ * @param {string} otp - The OTP sent to the user's email for verification.
+ * @throws {UnauthenticatedError} If OTP verification fails.
+ * @throws {ConflictError} If a user with the same email already exists.
+ * @return {Promise<any>} The newly created user.
+ */
 export const createUser = async (
   user: Omit<User, "id" | "permissions" | "isVerified">,
   otp: string
-) => {
+): Promise<any> => {
   const verifyOtp = await AuthService.verifyOtp(user.email, otp);
 
   if (!verifyOtp) {
@@ -26,12 +37,12 @@ export const createUser = async (
   }
   const existingUser = await UserModel.getUserByEmail(user.email);
 
-  // avoid duplicate email address
+  // Avoid duplicate email address
   if (existingUser) {
     throw new ConflictError("User already exists.");
   }
 
-  // hash the password - to store hashed password to the users data
+  // Hash the password - to store hashed password to the users data
   const hashedPassword = await bcrypt.hash(user.password, 10);
   const newUser = {
     ...user,
@@ -41,14 +52,25 @@ export const createUser = async (
   const userId = await UserModel.createUser(newUser);
   await BankAccountModel.createBankAccounts(userId);
 
-  // return success-message
+  // Return success-message
   return {
     statusCode: HttpStatusCodes.CREATED,
     message: "User created successfully",
   };
 };
 
-export const fetchUsers = async (page: number, size: number) => {
+/**
+ * Fetches users from the database.
+ *
+ * @async
+ * @function fetchUsers
+ * @param {number} page - The page number of the users to fetch.
+ * @param {number} size - The number of users to fetch per page.
+ * @throws {NotFoundError} If no users are available.
+ * @returns {Promise<{statusCode: number, message: string, users: User[], totalCount: string}>}
+ * An object containing the status code, message, array of users, and total count.
+ */
+export const fetchUsers = async (page: number, size: number): Promise<{ statusCode: number; message: string; users: User[]; totalCount: string; }> => {
   const result = await UserModel.fetchUsers(page, size);
 
   if (result.users.length === 0) {
@@ -63,11 +85,13 @@ export const fetchUsers = async (page: number, size: number) => {
   }
 };
 
-// get user by id
+/**
+ * Fetch user by Id
+ */
 export const getUserById = async (id: string) => {
   const data = await UserModel.getUserById(id);
 
-  // return success-message
+  // Return success-message
   if (data) {
     return {
       statusCode: HttpStatusCodes.OK,
@@ -75,18 +99,19 @@ export const getUserById = async (id: string) => {
       user: data,
     };
   } else {
-    // throw user-user-not-found error
+    // Throw user-user-not-found error
     const error = new NotFoundError("User not found.");
     throw error;
   }
 };
 
-// get user by email
-
+/**
+ * Fetch user by email.
+ */
 export const getUserByEmail = async (email: string) => {
   const data = await UserModel.getUserByEmail(email);
 
-  // return success-message
+  // Return success-message
   if (data) {
     return {
       statusCode: HttpStatusCodes.OK,
@@ -94,18 +119,18 @@ export const getUserByEmail = async (email: string) => {
       user: data,
     };
   } else {
-    // throw user-user-not-found error
+    // Throw user-user-not-found error
     const error = new NotFoundError("User not found.");
     throw error;
   }
 };
 
-// update user by id
+// Update user by id
 export const updateUserById = async (
   id: string,
   theUser: Omit<User, "id" | "permissions" | "isVerified">
 ) => {
-  // hash the password - to store hashed password to the users data
+  // Hash the password - to store hashed password to the users data
   const hashedPassword = await bcrypt.hash(theUser.password, 10);
   theUser.password = hashedPassword;
 
@@ -122,7 +147,7 @@ export const updateUserById = async (
   }
 };
 
-// delete user by id
+// Delete user by id
 export const deleteUserById = async (id: string) => {
 
   const user = await UserModel.getUserById(id);
@@ -139,7 +164,7 @@ export const deleteUserById = async (id: string) => {
   };
 };
 
-// update password
+// Update password
 export const updatePassword = async (
   id: string,
   oldPassword: string,
@@ -154,7 +179,7 @@ export const updatePassword = async (
       throw new UnauthenticatedError("Invalid old password was provided.");
     }
 
-    // hash the password - to store hashed password to the users data
+    // Hash the password - to store hashed password to the users data
     const hashedPassword = await bcrypt.hash(newPassword, 10);
     newPassword = hashedPassword;
 
@@ -169,6 +194,7 @@ export const updatePassword = async (
   }
 };
 
+// Update email address of theuser
 export const updateEmailAddress = async (
   id: string,
   emailAddress: string,
@@ -176,25 +202,29 @@ export const updateEmailAddress = async (
 ) => {
   const verifyOtp = await AuthService.verifyOtp(emailAddress, otp);
 
+  // Check for otp verification
   if (!verifyOtp) {
     throw new UnauthenticatedError("OTP verification failed.");
   }
   const existingUser = await UserModel.getUserByEmail(emailAddress);
 
-  // avoid duplicate email address
+  // Avoid duplicate email address
   if (existingUser) {
     throw new ConflictError("User already exists.");
   }
 
   const userId = await UserModel.updateEmail(id, emailAddress);
 
-  // return success-message
+  // Return success-message
   return {
     statusCode: HttpStatusCodes.OK,
     message: "Email updated successfully.",
   };
 };
 
+/**
+ * Set new password for the user.
+ */
 export const setNewPassword = async (
   id: string,
   newPassword: string,
@@ -212,7 +242,7 @@ export const setNewPassword = async (
     throw new UnauthenticatedError("OTP verification failed.");
   }
 
-  // hash the password - to store hashed password to the users data
+  // Hash the password - to store hashed password to the users data
   const hashedPassword = await bcrypt.hash(newPassword, 10);
   newPassword = hashedPassword;
 
@@ -221,11 +251,5 @@ export const setNewPassword = async (
   return {
     statusCode: HttpStatusCodes.OK,
     message: "Password updated successfully",
-  };
-
-  // return success-message
-  return {
-    statusCode: HttpStatusCodes.OK,
-    message: "Email updated successfully.",
   };
 };

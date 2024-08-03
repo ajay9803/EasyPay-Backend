@@ -2,11 +2,19 @@ import { NextFunction, Response } from "express";
 import { Request as AuthRequest } from "../interfaces/auth";
 import { createSocket, deleteSocket } from "../services/socket";
 
+/**
+ * Create a socket for a user.
+ *
+ * @param {AuthRequest} req - The request object containing user information.
+ * @param {Response} res - The response object to send the result.
+ * @param {NextFunction} next - The next function to call in the middleware chain.
+ * @return {Promise<void>} - A promise that resolves when the socket is created.
+ */
 export const createTheSocket = async (
   req: AuthRequest,
   res: Response,
   next: NextFunction
-) => {
+): Promise<void> => {
   try {
     const userId = req.user!.id;
 
@@ -20,11 +28,19 @@ export const createTheSocket = async (
   }
 };
 
+/**
+ * Delete a socket for a user.
+ *
+ * @param {AuthRequest} req - The request object containing user information.
+ * @param {Response} res - The response object to send the result.
+ * @param {NextFunction} next - The next function to call in the middleware chain.
+ * @return {Promise<void>} - A promise that resolves when the socket is deleted.
+ */
 export const deleteTheSocket = async (
   req: AuthRequest,
   res: Response,
   next: NextFunction
-) => {
+): Promise<void> => {
   try {
     const userId = req.user!.id;
 
