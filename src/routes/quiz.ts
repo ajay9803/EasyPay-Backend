@@ -11,9 +11,20 @@ import { createQuizDataBodySchema } from "../schemas/quiz";
 const router = express();
 
 // Route to create quiz data
-router.post("/", validateReqBody(createQuizDataBodySchema), authenticate, authorize("users.delete"), createQuizData);
+router.post(
+  "/",
+  validateReqBody(createQuizDataBodySchema),
+  authenticate,
+  authorize("users.create-quiz-data"),
+  createQuizData
+);
 
 // Route to fetch quiz data
-router.get("/", authenticate, authorize("users.delete"), fetchQuizData);
+router.get(
+  "/",
+  authenticate,
+  authorize("users.fetch-quiz-data"),
+  fetchQuizData
+);
 
-export default router;
+export default router;  

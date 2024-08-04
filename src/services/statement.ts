@@ -13,7 +13,9 @@ import HttpStatusCodes from "http-status-codes";
  * }>} - The fetched load fund transactions.
  * @throws {NotFoundError} - If no load fund transactions are found for the user.
  */
-export const fetchLoadFundTransactions = async (userId: string): Promise<{
+export const fetchLoadFundTransactions = async (
+  userId: string
+): Promise<{
   statusCode: number;
   message: string;
   transactions: Array<object>;
@@ -42,13 +44,17 @@ export const fetchLoadFundTransactions = async (userId: string): Promise<{
  * }>} - The fetched load fund transaction.
  * @throws {NotFoundError} - If the transaction is not found for the user.
  */
-export const fetchLoadFundTransaction = async (transactionId: string, userId: string): Promise<{
+export const fetchLoadFundTransaction = async (
+  transactionId: string,
+  userId: string
+): Promise<{
   statusCode: number;
   message: string;
   transaction: object;
 }> => {
   const transaction = await StatementModel.fetchLoadFundTransaction(
-    transactionId, userId
+    transactionId,
+    userId
   );
 
   if (!transaction) {
@@ -85,11 +91,11 @@ export const getBalanceTransferStatements = async (
   startDate: number,
   endDate: number
 ): Promise<{
-    statusCode: number;
-    message: string;
-    statements: object[];
-    totalCount: number;
-  }> => {
+  statusCode: number;
+  message: string;
+  statements: object[];
+  totalCount: number;
+}> => {
   const resultObject = await StatementModel.getBalanceTransferStatements(
     userId,
     page,

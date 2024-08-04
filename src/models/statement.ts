@@ -7,7 +7,9 @@ export class StatementModel extends BaseModel {
    * @param {string} userId - The ID of the user.
    * @return {Promise<Array<Object>>} - A promise that resolves to an array of load fund transaction objects.
    */
-  static fetchLoadFundTransactions = async (userId: string): Promise<Array<object>> => {
+  static fetchLoadFundTransactions = async (
+    userId: string
+  ): Promise<Array<object>> => {
     const loadFundTransactions = await this.queryBuilder()
       .select()
       .from("load_fund_transactions")
@@ -34,7 +36,12 @@ export class StatementModel extends BaseModel {
     userId: string
   ): Promise<object> => {
     const loadFundTransaction = await this.queryBuilder()
-      .select("load_fund_transactions.*", "mock_banks.name", "mock_banks.location", "mock_banks.image_url")
+      .select(
+        "load_fund_transactions.*",
+        "mock_banks.name",
+        "mock_banks.location",
+        "mock_banks.image_url"
+      )
       .from("load_fund_transactions")
       .join(
         "bank_accounts",
@@ -80,31 +87,43 @@ export class StatementModel extends BaseModel {
       .from("balance_transfer_statements");
 
     const applyFilters = (qb: any) => {
-      qb.where("created_at", ">=", startDate).where(
+      qb.where("created_at", ">=", startDate).andWhere(
         "created_at",
         "<=",
         endDate
       );
+
       if (cashFlow === "All") {
-        qb.where("sender_user_id", userId).orWhere("receiver_user_id", userId);
+        qb.andWhere((qb: any) => {
+          qb.where("sender_user_id", userId).orWhere(
+            "receiver_user_id",
+            userId
+          );
+        });
       } else if (cashFlow === "Debit") {
-        qb.where("receiver_user_id", userId);
+        qb.andWhere("receiver_user_id", userId);
       } else {
-        qb.where("sender_user_id", userId);
+        qb.andWhere("sender_user_id", userId);
       }
     };
 
     applyFilters(query);
     applyFilters(countQuery);
 
+    console.log(query.toSQL().toNative());
+    console.log(countQuery.toSQL().toNative());
+
     const rawStatements = await query;
     const totalCount = await countQuery.first();
+    console.log(totalCount);
 
     const statements = rawStatements.map((statement: any) => {
       statement.cashFlow =
         statement.senderUserId === userId ? "Credit" : "Debit";
       return statement;
     });
+
+    console.log(statements);
 
     return { statements, totalCount };
   };

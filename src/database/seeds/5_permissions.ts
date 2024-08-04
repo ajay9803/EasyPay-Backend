@@ -44,6 +44,12 @@ export function seed(knex: Knex): Promise<void> {
         { id: 16, permission_name: "users.send-update-email-otp" },
         { id: 17, permission_name: "users.fetch-balance-transfer-statements" },
         { id: 18, permission_name: "users.fetch-notifications" },
+        { id: 19, permission_name: "users.create-socket" },
+        { id: 20, permission_name: "users.delete-socket" },
+        { id: 21, permission_name: "users.create-quiz-data" },
+        { id: 22, permission_name: "users.fetch-quiz-data" },
+        { id: 23, permission_name: "users.update-easy-pay-points" },
+        { id: 24, permission_name: "users.redeem-easy-pay-points" },
       ]);
     });
 }
