@@ -28,21 +28,21 @@ export const verifyOtp = async (
 ): Promise<boolean> => {
   const existingOtp = await AuthModel.findOtpByEmail(email);
   if (existingOtp) {
-    // let currentTime = new Date();
-    // const otpCreationTime = new Date(existingOtp.createdAt);
-    // const timeDifference =
-    //   (currentTime.getTime() - otpCreationTime.getTime()) / 1000;
+    let currentTime = new Date().getTime();
+    const timeDifference = (currentTime - +existingOtp.createdAt) / 1000;
+    console.log(timeDifference);
 
-    /**
-     * Check if the Otp sent is equal to the recent Otp in the database
-     */
-    if (existingOtp.otp === otp) {
-      return true;
+    if (timeDifference < 120) {
+      if (existingOtp.otp === otp) {
+        return true;
+      } else {
+        return false;
+      }
     } else {
-      return false;
+      throw new InvalidError("OTP has expired.");
     }
   } else {
-    throw new InvalidError("OTP has expired.");
+    throw new InvalidError("OTP verification failed.");
   }
 };
 
@@ -58,6 +58,8 @@ export const sendSignupOtp = async (
 ): Promise<{ statusCode: number; message: string; otp: string }> => {
   let otp = EmailService.generateOtp();
 
+  console.log(otp);
+
   const exitingOtp = await AuthModel.findOtpByEmail(email);
 
   if (exitingOtp) {
@@ -65,6 +67,8 @@ export const sendSignupOtp = async (
   } else {
     await AuthModel.createOtp(email, otp);
   }
+
+  console.log('Here send otp now');
 
   await EmailService.sendSignupOtp(email, otp);
   return {
@@ -162,7 +166,6 @@ export const login = async (
   message: string;
   user: User;
   accessToken: string;
-  refreshToken: string;
 }> => {
   // Fetch existing user by email
   const existingUser = await UserModel.getUserByEmail(email);
@@ -199,11 +202,6 @@ export const login = async (
     expiresIn: config.jwt.accesstoken_expiry,
   });
 
-  // Create refresh token
-  const refreshToken = sign(payload, config.jwt.jwt_secret!, {
-    expiresIn: config.jwt.refreshtoken_expiry,
-  });
-
   const { password, ...userWithoutPassword } = existingUser;
 
   // Return success message
@@ -212,7 +210,6 @@ export const login = async (
     message: "User login successful.",
     user: userWithoutPassword,
     accessToken: accessToken,
-    refreshToken: refreshToken,
   };
 };
 

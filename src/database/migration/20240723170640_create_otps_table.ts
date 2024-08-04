@@ -14,7 +14,7 @@ export async function up(knex: Knex): Promise<void> {
     table.string("email", 50);
     table.string("otp", 50);
 
-    table.timestamp("created_at").notNullable().defaultTo(knex.fn.now());
+    table.bigInteger("created_at").notNullable();
   });
 }
 

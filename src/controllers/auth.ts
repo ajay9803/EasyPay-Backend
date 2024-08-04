@@ -83,7 +83,6 @@ export const sendForgotPasswordLink = async (
   }
 };
 
-
 /**
  * Handles the login request.
  *
@@ -112,7 +111,6 @@ export const login = async (
     next(e);
   }
 };
-
 
 export const refreshAccessToken = async (
   req: Request,

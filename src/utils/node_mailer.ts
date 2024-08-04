@@ -49,6 +49,7 @@ export const sendSignupOtp: (
     html: `<p>Hello User,</p><p>To create your account, please use the following OTP: <strong>${otp}</strong></p><p>From Easy Pay</p>`,
   };
 
+  console.log(mailOptions);
   return transporter.sendMail(mailOptions);
 };
 

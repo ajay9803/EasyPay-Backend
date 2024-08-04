@@ -27,6 +27,7 @@ class AuthModel extends BaseModel {
     let newOtpData = {
       email: email,
       otp: otp,
+      createdAt: new Date().getTime(),
     };
     await this.queryBuilder().insert(newOtpData).table("otps");
   };
@@ -44,6 +45,7 @@ class AuthModel extends BaseModel {
     let newOtpData = {
       email: email,
       otp: otp,
+      createdAt: new Date().getTime(),
     };
     await this.queryBuilder()
       .update(newOtpData)
